@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:bf="http://bibframe.org/vocab/" xmlns:bf2="http://bibframe.org/vocab2/" xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#" xmlns:relators="http://id.loc.gov/vocabulary/relators/">
+  <bf:Work rdf:about="http://base/13600108">
+    <rdf:type rdf:resource="http://bibframe.org/vocab/Text"/>
+    <bf:authorizedAccessPoint>Andersen, H. C. (Hans Christian), 1805-1875. Ole Lukøie / H.C. Andersen ; illustrationer af Otto Dickmeiss.Ole Lukøie</bf:authorizedAccessPoint>
+    <bf:workTitle rdf:resource="http://base/13600108title5"/>
+    <bf:creator rdf:resource="http://base/13600108person6"/>
+    <bf:contributor rdf:resource="http://base/13600108person7"/>
+    <bf:language rdf:resource="http://id.loc.gov/vocabulary/languages/dan"/>
+    <bf:intendedAudience rdf:resource="http://id.loc.gov/vocabulary/targetAudiences/juv"/>
+    <bf:classificationLcc rdf:resource="http://id.loc.gov/authorities/classification/PZ54"/>
+    <bf:authorizedAccessPoint xml:lang="x-bf-hash">andersenhchanschristian18051875olelukøiedanwork</bf:authorizedAccessPoint>
+  </bf:Work>
+  <bf:Instance rdf:about="http://base/13600108instance13">
+    <rdf:type rdf:resource="http://bibframe.org/vocab/Monograph"/>
+    <bf:instanceTitle rdf:resource="http://base/13600108title16"/>
+    <bf:isbn10 rdf:resource="http://isbn.example.org/8759517352"/>
+    <bf:isbn13 rdf:resource="http://isbn.example.org/9788759517352"/>
+    <bf:publication>
+      <bf:Provider>
+        <bf:providerName>
+          <bf:Organization>
+            <bf:label>Lindhardt og Ringhof</bf:label>
+          </bf:Organization>
+        </bf:providerName>
+        <bf:providerPlace>
+          <bf:Place>
+            <bf:label>København? </bf:label>
+          </bf:Place>
+        </bf:providerPlace>
+        <bf:copyrightDate>c2001.</bf:copyrightDate>
+      </bf:Provider>
+    </bf:publication>
+    <bf:modeOfIssuance>single unit</bf:modeOfIssuance>
+    <bf:extent>1 v. (unpaged) :</bf:extent>
+    <bf:dimensions>23 cm.</bf:dimensions>
+    <bf:illustrationNote>col. ill. ;</bf:illustrationNote>
+    <bf:titleStatement>Ole Lukøie</bf:titleStatement>
+    <bf:providerStatement>København? : Lindhardt og Ringhof, c2001.</bf:providerStatement>
+    <bf:note>Text based on the original work published under the title "H.C. Andersens eventyr / kritisk udgivet efter de originale eventyrhæfter med varianter ved Erik Dal og kommentarer ved Erling Nielsen": Copenhagen : Danske Sprog- og Litteraturselskab : C.A. Reitzel, 1990.</bf:note>
+    <bf:lccn>
+      <bf:Identifier>
+        <bf:identifierValue>2004436018</bf:identifierValue>
+        <bf:identifierScheme rdf:resource="http://id.loc.gov/vocabulary/identifiers/lccn"/>
+      </bf:Identifier>
+    </bf:lccn>
+    <bf:instanceOf rdf:resource="http://base/13600108"/>
+  </bf:Instance>
+  <bf:Annotation rdf:about="http://base/13600108annotation12">
+    <bf:derivedFrom rdf:resource="http://base/13600108.marcxml.xml"/>
+    <bf:descriptionSource rdf:resource="http://id.loc.gov/vocabulary/organizations/dlc"/>
+    <bf:descriptionConventions rdf:resource="http://id.loc.gov/vocabulary/descriptionConventions/aacr2"/>
+    <bf:generationProcess>DLC transform-tool:2015-10-28-T11:01:00</bf:generationProcess>
+    <bf:changeDate>2004-09-15T14:13</bf:changeDate>
+    <bf:annotates rdf:resource="http://base/13600108"/>
+  </bf:Annotation>
+  <bf:HeldItem rdf:about="http://base/13600108helditem29">
+    <bf:label>PZ54 .A498 2001</bf:label>
+    <bf:shelfMarkLcc>PZ54 .A498 2001</bf:shelfMarkLcc>
+    <bf:holdingFor rdf:resource="http://base/13600108instance13"/>
+  </bf:HeldItem>
+  <bf:Title rdf:about="http://base/13600108title5">
+    <bf:label>Ole Lukøie / H.C. Andersen ; illustrationer af Otto Dickmeiss.</bf:label>
+    <bf:titleValue>Ole Lukøie</bf:titleValue>
+  </bf:Title>
+  <bf:Person rdf:about="http://base/13600108person6">
+    <bf:label>Andersen, H. C. (Hans Christian), 1805-1875.</bf:label>
+    <bf:authorizedAccessPoint>Andersen, H. C. (Hans Christian), 1805-1875.</bf:authorizedAccessPoint>
+    <bf:hasAuthority>
+      <madsrdf:Authority>
+        <madsrdf:authoritativeLabel>Andersen, H. C. (Hans Christian), 1805-1875.</madsrdf:authoritativeLabel>
+      </madsrdf:Authority>
+    </bf:hasAuthority>
+  </bf:Person>
+  <bf:Person rdf:about="http://base/13600108person7">
+    <bf:label>Dickmeiss, Otto</bf:label>
+    <bf:authorizedAccessPoint>Dickmeiss, Otto</bf:authorizedAccessPoint>
+    <bf:hasAuthority>
+      <madsrdf:Authority>
+        <madsrdf:authoritativeLabel>Dickmeiss, Otto</madsrdf:authoritativeLabel>
+      </madsrdf:Authority>
+    </bf:hasAuthority>
+  </bf:Person>
+  <bf:Title rdf:about="http://base/13600108title16">
+    <bf:label>Ole Lukøie / H.C. Andersen ; illustrationer af Otto Dickmeiss.</bf:label>
+    <bf:titleValue>Ole Lukøie</bf:titleValue>
+  </bf:Title>
+</rdf:RDF>
