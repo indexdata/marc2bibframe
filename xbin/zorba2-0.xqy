@@ -65,16 +65,16 @@ declare namespace httpexpath = "http://expath.org/ns/http-client";
 (:~
 :   This variable is for the base uri for your Authorites/Concepts.
 :   It is the base URI for the rdf:about attribute.
-:   
+:
 :)
 declare variable $baseuri as xs:string external := "http://example.org/";
 
 (:~
-:   This variable determines whether bnodes should identify resources instead of 
-:   http URIs, except for the "main" Work derived from each MARC record.  At this time, 
+:   This variable determines whether bnodes should identify resources instead of
+:   http URIs, except for the "main" Work derived from each MARC record.  At this time,
 :   the "main" Work must be identified by HTTP URI (using the $baseuri variable
 :   above).
-:   
+:
 :)
 declare variable $usebnodes as xs:string external := "false";
 
@@ -97,7 +97,7 @@ declare variable $resolveLabelsWithID as xs:string external := "false";
 Performs an http get but does not follow redirects
 
 $l          as xs:string is the label
-$scheme     as xs:string is the scheme    
+$scheme     as xs:string is the scheme
 :)
 declare %an:sequential function local:http-get(
             $label as xs:string,
@@ -105,13 +105,13 @@ declare %an:sequential function local:http-get(
     )
 {
     let $l := fn:encode-for-uri($label)
-    let $request := 
+    let $request :=
         http:send-request(
-            <httpexpath:request 
-                method="GET" 
-                href="http://id.loc.gov/authorities/{$scheme}/label/{$l}" 
-                follow-redirect="false"/>, 
-            (), 
+            <httpexpath:request
+                method="GET"
+                href="http://id.loc.gov/authorities/{$scheme}/label/{$l}"
+                follow-redirect="false"/>,
+            (),
             ()
         )
     return $request
@@ -122,7 +122,7 @@ Outputs a resource, replacing verbose hasAuthority property
 with a simple rdf:resource pointer
 
 $resource   as element() is the resource
-$authuri    as xs:string is the authority URI    
+$authuri    as xs:string is the authority URI
 :)
 declare %an:nondeterministic function local:generate-resource(
             $r as element(),
@@ -143,16 +143,16 @@ declare %an:nondeterministic function local:generate-resource(
 Tries to resolve Labels to URIs
 
 $resource   as element() is the resource
-$authuri    as xs:string is the authority URI    
+$authuri    as xs:string is the authority URI
 :)
 declare %an:sequential function local:resolve-labels(
         $flatrdfxml as element(rdf:RDF)
     )
 {
-    let $resources := 
+    let $resources :=
         for $r in $flatrdfxml/*
         let $n := fn:local-name($r)
-        let $scheme := 
+        let $scheme :=
             if ( fn:matches($n, "Topic|TemporalConcept") ) then
                 "subjects"
             else
@@ -162,36 +162,36 @@ declare %an:sequential function local:resolve-labels(
                 let $label := ($r/bf:authorizedAccessPoint, $r/bf:label)[1]
                 let $label := fn:normalize-space(xs:string($label))
                 let $req1 := local:http-get($label, $scheme)
-                let $resource := 
+                let $resource :=
                     if ($req1[1]/@status eq 302) then
                         let $authuri := xs:string($req1[1]/httpexpath:header[@name eq "X-URI"][1]/@value)
                         return local:generate-resource($r, $authuri)
-                    else if ( 
+                    else if (
                         $req1[1]/@status ne 302 and
                         fn:ends-with($label, ".")
                         ) then
-                        let $l := fn:substring($label, 1, fn:string-length($label)-1) 
+                        let $l := fn:substring($label, 1, fn:string-length($label)-1)
                         let $req2 := local:http-get($l, $scheme)
                         return
                             if ($req2[1]/@status eq 302) then
                                 let $authuri := xs:string($req2[1]/httpexpath:header[@name eq "X-URI"][1]/@value)
                                 return local:generate-resource($r, $authuri)
-                            else 
+                            else
                                 (: There was no match or some other message, keep moving :)
                                 $r
-                    else 
+                    else
                         $r
                 return $resource
-                    
+
             else
                 $r
-    
+
     return <rdf:RDF>{$resources}</rdf:RDF>
 };
 let $usebnodes:= if ($usebnodes="") then "false" else $usebnodes
-let $marcxml := 
+let $marcxml :=
     if ( fn:starts-with($marcxmluri, "http://" ) or fn:starts-with($marcxmluri, "https://" ) ) then
-        let $http-response := http:get-node($marcxmluri) 
+        let $http-response := http:get-node($marcxmluri)
         return $http-response[2]
     else
        let $raw-data :=
@@ -200,7 +200,7 @@ let $marcxml :=
             else
                 file:read-text($marcxmluri)
         let $mxml := parsexml:parse(
-                    $raw-data, 
+                    $raw-data,
                     <parseoptions:options />
                 )
         return $mxml
@@ -213,18 +213,18 @@ let $resources :=
     let $holds:=
         for $hold in $marcxml[fn:string(marcxml:controlfield[@tag="004"])=$controlnum]
             return $hold
-  
+
     let $httpuri := fn:concat($baseuri , $controlnum)
     let $recordset:= element marcxml:collection{$r,$holds}
     let $bibframe :=  marcbib2bibframe:marcbib2bibframe($recordset,$httpuri)
     return $bibframe/child::node()[fn:name()]
-    
-let $rdfxml-raw := 
+
+let $rdfxml-raw :=
         element rdf:RDF {
             $resources
         }
-        
-let $rdfxml := 
+
+let $rdfxml :=
     if ( $serialization ne "rdfxml-raw" ) then
         let $flatrdfxml := RDFXMLnested2flat:RDFXMLnested2flat($rdfxml-raw, $baseuri, $usebnodes)
         return
@@ -233,12 +233,12 @@ let $rdfxml :=
             else
                 $flatrdfxml
     else
-        $rdfxml-raw 
-        
-let $response :=  
-    if ($serialization eq "ntriples") then 
+        $rdfxml-raw
+
+let $response :=
+    if ($serialization eq "ntriples") then
         rdfxml2nt:rdfxml2ntriples($rdfxml)
-    else if ($serialization eq "json") then 
+    else if ($serialization eq "json") then
         rdfxml2json:rdfxml2json($rdfxml)
     else if ($serialization eq "exhibitJSON") then
         bfRDFXML2exhibitJSON:bfRDFXML2exhibitJSON($rdfxml, $baseuri)

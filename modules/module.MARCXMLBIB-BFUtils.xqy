@@ -13,13 +13,13 @@ xquery version "1.0";
 :   Xquery Specification: January 2007
 :
 :   Module Overview:    Utilities for standard functions used in transforming a MARC Bib record
-:       into its bibframe parts.  
+:       into its bibframe parts.
 :
 :)
-   
+
 (:~
 :   Functions are called by the module MARCXMLBIB-2-BIBFRAME
-:	
+:
 :   @author Kevin Ford (kefo@loc.gov)
 :   @author Nate Trail (ntra@loc.gov)
 :   @since August 1, 2013
@@ -28,28 +28,28 @@ xquery version "1.0";
 
 module namespace marc2bfutils  = 'info:lc/id-modules/marc2bfutils#';
 declare namespace marcxml      = "http://www.loc.gov/MARC21/slim";
-declare namespace bf           	= "http://bibframe.org/vocab/";
-declare namespace rdf           	= "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+declare namespace bf            = "http://bibframe.org/vocab/";
+declare namespace rdf                   = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 (: VARIABLES :)
 declare variable $marc2bfutils:resourceTypes := (
     <resourceTypes>
         <type leader6="a">Text</type>
-        <type cf007="t">Text</type>       
+        <type cf007="t">Text</type>
         <type sf336a="(text|tactile text)">Text</type>
         <type sf336b="(txt|tct)">Text</type>
         <type leader6="c">NotatedMusic</type>
         <type leader6="d">NotatedMusic</type>
         <type cf007="q">NotatedMusic</type>
         <type sf336a="(notated music|tactile notated music)">NotatedMusic</type>
-        <type sf336b="(ntm|ccm)">NotatedMusic</type>`        
+        <type sf336b="(ntm|ccm)">NotatedMusic</type>`
         <type sf336a="(notated movement|tactile notated movement)">NotatedMovement</type>
         <type sf336b="(ntv|tcn)">NotatedMovement</type>
-        
+
         <type leader6="e">Cartography</type>
         <type leader6="f">Cartography</type>
         <type cf007="adr">Cartography</type>
         <type sf336a="(cartographic dataset|cartographic image|cartographic moving image|cartographic tactile image|cartographic tactile three-dimensional form|cartographic three-dimensional form)">Cartography</type>
-        <type sf336b="(tcrd|cri|crm|crt|crn|crf)">Cartography</type>         
+        <type sf336b="(tcrd|cri|crm|crt|crn|crf)">Cartography</type>
         <type leader6="g">MovingImage</type>
         <type cf007="m">MovingImage</type>
         <type cf007="v">MovingImage</type>
@@ -77,7 +77,7 @@ declare variable $marc2bfutils:resourceTypes := (
         <type leader6="r">ThreeDimensionalObject</type>
         <type sf336a="(three-dimensional form|tactile three-dimensional form|three-dimensional moving image| cartographic three dimensional form|cartographic tactile three dimensional form)">ThreeDimensionalObject</type>
         <type sf336b="(tdf|tcf|tcm|crf|crn )">ThreeDimensionalObject</type>
-        <type leader6="t">Text</type>        
+        <type leader6="t">Text</type>
         <type cf007="f">Tactile</type>
         <type sf336a="(cartographic tactile image|cartographic tactile three-dimensional form|tactile image|tactile notated music|tactile notated movement|tactile text|tactile three-dimensional form)">Tactile</type>
         <type sf336b="(crt|crn|tci|tcm|tcn|tct|tcf)">Tactile</type>
@@ -85,7 +85,7 @@ declare variable $marc2bfutils:resourceTypes := (
     );
     (:008-20 for MU type of resource:)
     declare variable $marc2bfutils:musicFormats:=(
- 
+
     <musicFormats>
         <term cf008-20="a">Full score</term>
         <term cf008-20="b">Full score, miniature or study size</term>
@@ -103,15 +103,15 @@ declare variable $marc2bfutils:resourceTypes := (
         <type leader6="f">Manuscript</type>
         <type leader6="t">Manuscript</type>
         <type leader7="c">Collection</type>
-        <type leader7="d">Collection</type>        
+        <type leader7="d">Collection</type>
         <type leader7="i">Integrating</type>
-        <type leader7="b">Serial</type>        
+        <type leader7="b">Serial</type>
         <type leader7="s">Serial</type>
         <type leader8="a">Archival</type>
         <type cf007="f">Tactile</type>
-        <type cf007="c">Electronic</type>          
+        <type cf007="c">Electronic</type>
         <type sf336a="tactile text">Tactile</type>
-        <type sf336b="tct">Tactile</type>        
+        <type sf336b="tct">Tactile</type>
     </instanceTypes>
     );
     declare variable $marc2bfutils:targetAudiences := (
@@ -126,33 +126,33 @@ declare variable $marc2bfutils:resourceTypes := (
         <type cf008-22="j">Juv</type>
     </targetAudiences>
     );
-    
+
  declare variable $marc2bfutils:subject-types := (
-	 <subjectTypes> 
-		<subject tag="600">Person</subject>
-		<subject tag="610">Organization</subject>		
-		<subject tag="611">Meeting</subject>
-		<!--<subject tag="630">Work</subject>-->
-		<subject tag="648">Temporal</subject>
-		<subject tag="650">Topic</subject>
-		<!--<subject tag="651">Place</subject>-->
-		<subject tag="654">Topic</subject>
-		<subject tag="655">Topic</subject>
-		<!--<subject tag="655">Genre</subject>		
-		<subject tag="656">Occupation</subject>		
-		<subject tag="657">Function</subject>
-		<subject tag="658">Objective</subject>-->
-		
-		<subject tag="656">Topic</subject>		
-		<subject tag="657">Topic</subject>
-		<subject tag="658">Topic</subject>
-		<!--<subject tag="662">Place</subject>		-->
-		<!--<subject tag="662">HierarchicalPlace</subject>-->
-		<subject tag="653">Topic</subject>
-		<subject tag="751">Place</subject>
-		<subject tag="752">Topic</subject>
-		<!--<subject tag="752">HierarchicalPlace</subject>-->
-	</subjectTypes>
+         <subjectTypes>
+                <subject tag="600">Person</subject>
+                <subject tag="610">Organization</subject>
+                <subject tag="611">Meeting</subject>
+                <!--<subject tag="630">Work</subject>-->
+                <subject tag="648">Temporal</subject>
+                <subject tag="650">Topic</subject>
+                <!--<subject tag="651">Place</subject>-->
+                <subject tag="654">Topic</subject>
+                <subject tag="655">Topic</subject>
+                <!--<subject tag="655">Genre</subject>
+                <subject tag="656">Occupation</subject>
+                <subject tag="657">Function</subject>
+                <subject tag="658">Objective</subject>-->
+
+                <subject tag="656">Topic</subject>
+                <subject tag="657">Topic</subject>
+                <subject tag="658">Topic</subject>
+                <!--<subject tag="662">Place</subject>          -->
+                <!--<subject tag="662">HierarchicalPlace</subject>-->
+                <subject tag="653">Topic</subject>
+                <subject tag="751">Place</subject>
+                <subject tag="752">Topic</subject>
+                <!--<subject tag="752">HierarchicalPlace</subject>-->
+        </subjectTypes>
 );
 declare variable $marc2bfutils:formsOfItems := (
     <formsOfItems>
@@ -176,24 +176,24 @@ declare variable $marc2bfutils:classes := (
     <property name="classificationSpanEnd" label="classification span end for class number" domain="Work" marc="083--/c" tag="083" sfcodes="c"/>
     <property name="classificationTableSeq" label="DDC table sequence number" domain="Work" marc="083--/y" tag="083" sfcodes="y"/>
     <property name="classificationTable" label="DDC table" domain="" marc="083--/z" tag="083" sfcodes="z"/>
-    <property name="classificationScheme" label="type of classification" domain="Work" marc="086--/2" tag="086" sfcodes="2"/>   
-    <property name="classificationEdition" label="edition of class scheme" domain="Work" marc="If 080,082,083 1- then 'abridged'" tag="(080|082|083)" ind1="1"/>	
+    <property name="classificationScheme" label="type of classification" domain="Work" marc="086--/2" tag="086" sfcodes="2"/>
+    <property name="classificationEdition" label="edition of class scheme" domain="Work" marc="If 080,082,083 1- then 'abridged'" tag="(080|082|083)" ind1="1"/>
     <property name="classificationEdition" label="edition of class scheme" domain="Work" marc="If 080,082,083 1- then 'full'" tag="080|082|083" ind1="0"/>
     <property name="classificationAssigner" label="institution assigning classification" domain="Work" marc="if 070,071 then NAL" tag="(050|051|060|061|070|071|082|083|084)"/>
-    
+
     <property name="classificationDesignation" label="Part of class scheme used" domain="Work" marc="if 082,083 --/m=a then'standard', m=b then 'optional'" tag="(082|083)"  sfcodes="m=a then'standard', m=b then 'optional'"/>
     <property name="classificationStatus" label="status of classification" domain="Work" marc="if 086/z then status=canceled/invalid" tag="if "  sfcodes="z then status=canceled/invalid"/>
     <property name="classificationLcc" className="LccClassification" label="LCC Classification" domain="Work" marc="050,051,055,070,071--/a" tag="(050|051|052|055|070|071)" sfcodes="a" level="property"/>
     <property name="classificationNlm" className="NlmClassification" label="NLM Classification" domain="Work" marc="060,061--/a" tag="(060|061)" sfcodes="a" level="property"/>
     <property name="classification" label="classification" domain="Work" marc="084,086--/a" tag="(084|086)" ind1=" " sfcodes="a" level="property"/>
-    <property name="classificationDdc" className="DdcClassification" label="DDC Classification" domain="Work" marc="083--/a'hyphen'c" tag="083" sfcodes="a'hyphen'c" level="property"/> 
-    <property name="classificationDdc" className="DdcClassification" label="DDC Classification" domain="Work" marc="082--/a" tag="082" sfcodes="a" level="property"/>	
-    <property name="classificationUdc" className="UdcClassification" label="UDC Classification" domain="Work" marc="080--/a+c" tag="080" sfcodes="a+c" level="property"/>	
+    <property name="classificationDdc" className="DdcClassification" label="DDC Classification" domain="Work" marc="083--/a'hyphen'c" tag="083" sfcodes="a'hyphen'c" level="property"/>
+    <property name="classificationDdc" className="DdcClassification" label="DDC Classification" domain="Work" marc="082--/a" tag="082" sfcodes="a" level="property"/>
+    <property name="classificationUdc" className="UdcClassification" label="UDC Classification" domain="Work" marc="080--/a+c" tag="080" sfcodes="a+c" level="property"/>
 </vocab>
 );
 declare variable $marc2bfutils:sounds := (
 (:if ($d/ancestor::marcxml:record/marcxml:controlfield[@tag="007"] and  fn:matches(fn:substring($d/ancestor::marcxml:record/marcxml:controlfield[@tag="007"],1,1) ,"(c|g|m|v)")) then:)
-<sounds > 
+<sounds >
         <type cf007-5="a">Sound on medium</type>
         <type cf007-5="b">Sound separate from medium</type>
         <type cf007-5="u">Unknown</type>
@@ -208,383 +208,383 @@ declare variable $marc2bfutils:sounds := (
         <type cf007-6="u">Unknown</type>
 </sounds>
 );
-                 
+
 (:
 relators crosswalk
-@source  http://id.loc.gov/vocabulary/relators 
+@source  http://id.loc.gov/vocabulary/relators
 @since 2014-05-15
 :)
 declare variable $marc2bfutils:role-xwalk:=
-(<relators updated="2014-10-24">     
- 	<term roletext="abridger" rolecode="abr" uri="http://id.loc.gov/vocabulary/relators/abr"/>
-	<term roletext="actor" rolecode="act" uri="http://id.loc.gov/vocabulary/relators/act"/>
-	<term roletext="adapter" rolecode="adp" uri="http://id.loc.gov/vocabulary/relators/adp"/>
-	<term roletext="addressee" rolecode="rcp" uri="http://id.loc.gov/vocabulary/relators/rcp">
-		<var roletext="recipient" rolecode="rcp"/>
-	</term>
-	<term roletext="analyst" rolecode="anl" uri="http://id.loc.gov/vocabulary/relators/anl"/>
-	<term roletext="animator" rolecode="anm" uri="http://id.loc.gov/vocabulary/relators/anm"/>
-	<term roletext="annotator" rolecode="ann" uri="http://id.loc.gov/vocabulary/relators/ann"/>
-	<term roletext="appellant" rolecode="apl" uri="http://id.loc.gov/vocabulary/relators/apl"/>
-	<term roletext="appellee" rolecode="ape" uri="http://id.loc.gov/vocabulary/relators/ape"/>
-	<term roletext="applicant" rolecode="app" uri="http://id.loc.gov/vocabulary/relators/app"/>
-	<term roletext="architect" rolecode="arc" uri="http://id.loc.gov/vocabulary/relators/arc"/>
-	<term roletext="arranger" rolecode="arr" uri="http://id.loc.gov/vocabulary/relators/arr">
-		<var roletext="arranger of music" rolecode="arr"/>
-	</term>
-	<term roletext="art copyist" rolecode="acp" uri="http://id.loc.gov/vocabulary/relators/acp"/>
-	<term roletext="art director" rolecode="adi" uri="http://id.loc.gov/vocabulary/relators/adi"/>
-	<term roletext="artist" rolecode="art" uri="http://id.loc.gov/vocabulary/relators/art">
-		<var roletext="graphic technician" rolecode="art"/>
-	</term>
-	<term roletext="artistic director" rolecode="ard" uri="http://id.loc.gov/vocabulary/relators/ard"/>
-	<term roletext="assignee" rolecode="asg" uri="http://id.loc.gov/vocabulary/relators/asg"/>
-	<term roletext="associated name" rolecode="asn" uri="http://id.loc.gov/vocabulary/relators/asn"/>
-	<term roletext="attributed name" rolecode="att" uri="http://id.loc.gov/vocabulary/relators/att">
-		<var roletext="supposed name" rolecode="att"/>
-	</term>
-	<term roletext="auctioneer" rolecode="auc" uri="http://id.loc.gov/vocabulary/relators/auc"/>
-	<term roletext="author" rolecode="aut" uri="http://id.loc.gov/vocabulary/relators/aut">
-		<var roletext="joint author" rolecode="aut"/>
-	</term>
-	<term roletext="author in quotations or text abstracts" rolecode="aqt" uri="http://id.loc.gov/vocabulary/relators/aqt"/>
-	<term roletext="author of afterword, colophon, etc." rolecode="aft" uri="http://id.loc.gov/vocabulary/relators/aft"/>
-	<term roletext="author of dialog" rolecode="aud" uri="http://id.loc.gov/vocabulary/relators/aud"/>
-	<term roletext="author of introduction, etc." rolecode="aui" uri="http://id.loc.gov/vocabulary/relators/aui"/>
-	<term roletext="autographer" rolecode="ato" uri="http://id.loc.gov/vocabulary/relators/ato"/>
-	<term roletext="bibliographic antecedent" rolecode="ant" uri="http://id.loc.gov/vocabulary/relators/ant"/>
-	<term roletext="binder" rolecode="bnd" uri="http://id.loc.gov/vocabulary/relators/bnd"/>
-	<term roletext="binding designer" rolecode="bdd" uri="http://id.loc.gov/vocabulary/relators/bdd">
-		<var roletext="designer of binding" rolecode="bdd"/>
-	</term>
-	<term roletext="blurb writer" rolecode="blw" uri="http://id.loc.gov/vocabulary/relators/blw"/>
-	<term roletext="book designer" rolecode="bkd" uri="http://id.loc.gov/vocabulary/relators/bkd">
-		<var roletext="designer of book" rolecode="bkd"/>
-		<var roletext="designer of e-book" rolecode="bkd"/>
-	</term>
-	<term roletext="book producer" rolecode="bkp" uri="http://id.loc.gov/vocabulary/relators/bkp">
-		<var roletext="producer of book" rolecode="bkp"/>
-	</term>
-	<term roletext="bookjacket designer" rolecode="bjd" uri="http://id.loc.gov/vocabulary/relators/bjd">
-		<var roletext="designer of bookjacket" rolecode="bjd"/>
-	</term>
-	<term roletext="bookplate designer" rolecode="bpd" uri="http://id.loc.gov/vocabulary/relators/bpd"/>
-	<term roletext="bookseller" rolecode="bsl" uri="http://id.loc.gov/vocabulary/relators/bsl"/>
-	<term roletext="braille embosser" rolecode="brl" uri="http://id.loc.gov/vocabulary/relators/brl"/>
-	<term roletext="broadcaster" rolecode="brd" uri="http://id.loc.gov/vocabulary/relators/brd"/>
-	<term roletext="calligrapher" rolecode="cll" uri="http://id.loc.gov/vocabulary/relators/cll"/>
-	<term roletext="cartographer" rolecode="ctg" uri="http://id.loc.gov/vocabulary/relators/ctg"/>
-	<term roletext="caster" rolecode="cas" uri="http://id.loc.gov/vocabulary/relators/cas"/>
-	<term roletext="censor" rolecode="cns" uri="http://id.loc.gov/vocabulary/relators/cns">
-		<var roletext="bowdlerizer" rolecode="cns"/>
-		<var roletext="expurgator" rolecode="cns"/>
-	</term>
-	<term roletext="choreographer" rolecode="chr" uri="http://id.loc.gov/vocabulary/relators/chr"/>
-	<term roletext="cinematographer" rolecode="cng" uri="http://id.loc.gov/vocabulary/relators/cng">
-		<var roletext="director of photography" rolecode="cng"/>
-	</term>
-	<term roletext="client" rolecode="cli" uri="http://id.loc.gov/vocabulary/relators/cli"/>
-	<term roletext="collection registrar" rolecode="cor" uri="http://id.loc.gov/vocabulary/relators/cor"/>
-	<term roletext="collector" rolecode="col" uri="http://id.loc.gov/vocabulary/relators/col"/>
-	<term roletext="collotyper" rolecode="clt" uri="http://id.loc.gov/vocabulary/relators/clt"/>
-	<term roletext="colorist" rolecode="clr" uri="http://id.loc.gov/vocabulary/relators/clr"/>
-	<term roletext="commentator" rolecode="cmm" uri="http://id.loc.gov/vocabulary/relators/cmm"/>
-	<term roletext="commentator for written text" rolecode="cwt" uri="http://id.loc.gov/vocabulary/relators/cwt"/>
-	<term roletext="compiler" rolecode="com" uri="http://id.loc.gov/vocabulary/relators/com"/>
-	<term roletext="complainant" rolecode="cpl" uri="http://id.loc.gov/vocabulary/relators/cpl"/>
-	<term roletext="complainant-appellant" rolecode="cpt" uri="http://id.loc.gov/vocabulary/relators/cpt"/>
-	<term roletext="complainant-appellee" rolecode="cpe" uri="http://id.loc.gov/vocabulary/relators/cpe"/>
-	<term roletext="composer" rolecode="cmp" uri="http://id.loc.gov/vocabulary/relators/cmp"/>
-	<term roletext="compositor" rolecode="cmt" uri="http://id.loc.gov/vocabulary/relators/cmt">
-		<var roletext="typesetter" rolecode="cmt"/>
-	</term>
-	<term roletext="conceptor" rolecode="ccp" uri="http://id.loc.gov/vocabulary/relators/ccp"/>
-	<term roletext="conductor" rolecode="cnd" uri="http://id.loc.gov/vocabulary/relators/cnd"/>
-	<term roletext="conservator" rolecode="con" uri="http://id.loc.gov/vocabulary/relators/con">
-		<var roletext="preservationist" rolecode="con"/>
-	</term>
-	<term roletext="consultant" rolecode="csl" uri="http://id.loc.gov/vocabulary/relators/csl"/>
-	<term roletext="consultant to a project" rolecode="csp" uri="http://id.loc.gov/vocabulary/relators/csp"/>
-	<term roletext="contestant" rolecode="cos" uri="http://id.loc.gov/vocabulary/relators/cos"/>
-	<term roletext="contestant-appellant" rolecode="cot" uri="http://id.loc.gov/vocabulary/relators/cot"/>
-	<term roletext="contestant-appellee" rolecode="coe" uri="http://id.loc.gov/vocabulary/relators/coe"/>
-	<term roletext="contestee" rolecode="cts" uri="http://id.loc.gov/vocabulary/relators/cts"/>
-	<term roletext="contestee-appellant" rolecode="ctt" uri="http://id.loc.gov/vocabulary/relators/ctt"/>
-	<term roletext="contestee-appellee" rolecode="cte" uri="http://id.loc.gov/vocabulary/relators/cte"/>
-	<term roletext="contractor" rolecode="ctr" uri="http://id.loc.gov/vocabulary/relators/ctr"/>
-	<term roletext="contributor" rolecode="ctb" uri="http://id.loc.gov/vocabulary/relators/ctb">
-		<var roletext="collaborator" rolecode="ctb"/>
-	</term>
-	<term roletext="copyright claimant" rolecode="cpc" uri="http://id.loc.gov/vocabulary/relators/cpc"/>
-	<term roletext="copyright holder" rolecode="cph" uri="http://id.loc.gov/vocabulary/relators/cph"/>
-	<term roletext="corrector" rolecode="crr" uri="http://id.loc.gov/vocabulary/relators/crr"/>
-	<term roletext="correspondent" rolecode="crp" uri="http://id.loc.gov/vocabulary/relators/crp"/>
-	<term roletext="costume designer" rolecode="cst" uri="http://id.loc.gov/vocabulary/relators/cst"/>
-	<term roletext="court governed" rolecode="cou" uri="http://id.loc.gov/vocabulary/relators/cou"/>
-	<term roletext="court reporter" rolecode="crt" uri="http://id.loc.gov/vocabulary/relators/crt"/>
-	<term roletext="cover designer" rolecode="cov" uri="http://id.loc.gov/vocabulary/relators/cov">
-		<var roletext="designer of cover" rolecode="cov"/>
-	</term>
-	<term roletext="creator" rolecode="cre" uri="http://id.loc.gov/vocabulary/relators/cre"/>
-	<term roletext="curator" rolecode="cur" uri="http://id.loc.gov/vocabulary/relators/cur">
-		<var roletext="curator of an exhibition" rolecode="cur"/>
-	</term>
-	<term roletext="dancer" rolecode="dnc" uri="http://id.loc.gov/vocabulary/relators/dnc"/>
-	<term roletext="data contributor" rolecode="dtc" uri="http://id.loc.gov/vocabulary/relators/dtc"/>
-	<term roletext="data manager" rolecode="dtm" uri="http://id.loc.gov/vocabulary/relators/dtm"/>
-	<term roletext="dedicatee" rolecode="dte" uri="http://id.loc.gov/vocabulary/relators/dte">
-		<var roletext="dedicatee of item" rolecode="dte"/>
-	</term>
-	<term roletext="dedicator" rolecode="dto" uri="http://id.loc.gov/vocabulary/relators/dto"/>
-	<term roletext="defendant" rolecode="dfd" uri="http://id.loc.gov/vocabulary/relators/dfd"/>
-	<term roletext="defendant-appellant" rolecode="dft" uri="http://id.loc.gov/vocabulary/relators/dft"/>
-	<term roletext="defendant-appellee" rolecode="dfe" uri="http://id.loc.gov/vocabulary/relators/dfe"/>
-	<term roletext="degree granting institution" rolecode="dgg" uri="http://id.loc.gov/vocabulary/relators/dgg">
-		<var roletext="degree grantor" rolecode="dgg"/>
-	</term>
-	<term roletext="degree supervisor" rolecode="dgs" uri="http://id.loc.gov/vocabulary/relators/dgs"/>
-	<term roletext="delineator" rolecode="dln" uri="http://id.loc.gov/vocabulary/relators/dln"/>
-	<term roletext="depicted" rolecode="dpc" uri="http://id.loc.gov/vocabulary/relators/dpc"/>
-	<term roletext="depositor" rolecode="dpt" uri="http://id.loc.gov/vocabulary/relators/dpt"/>
-	<term roletext="designer" rolecode="dsr" uri="http://id.loc.gov/vocabulary/relators/dsr"/>
-	<term roletext="director" rolecode="drt" uri="http://id.loc.gov/vocabulary/relators/drt"/>
-	<term roletext="dissertant" rolecode="dis" uri="http://id.loc.gov/vocabulary/relators/dis"/>
-	<term roletext="distribution place" rolecode="dbp" uri="http://id.loc.gov/vocabulary/relators/dbp"/>
-	<term roletext="distributor" rolecode="dst" uri="http://id.loc.gov/vocabulary/relators/dst"/>
-	<term roletext="donor" rolecode="dnr" uri="http://id.loc.gov/vocabulary/relators/dnr"/>
-	<term roletext="draftsman" rolecode="drm" uri="http://id.loc.gov/vocabulary/relators/drm">
-		<var roletext="technical draftsman" rolecode="drm"/>
-	</term>
-	<term roletext="dubious author" rolecode="dub" uri="http://id.loc.gov/vocabulary/relators/dub"/>
-	<term roletext="editor" rolecode="edt" uri="http://id.loc.gov/vocabulary/relators/edt"/>
-	<term roletext="editor of compilation" rolecode="edc" uri="http://id.loc.gov/vocabulary/relators/edc"/>
-	<term roletext="editor of moving image work" rolecode="edm" uri="http://id.loc.gov/vocabulary/relators/edm">
-		<var roletext="moving image work editor" rolecode="edm"/>
-	</term>
-	<term roletext="electrician" rolecode="elg" uri="http://id.loc.gov/vocabulary/relators/elg">
-		<var roletext="chief electrician" rolecode="elg"/>
-		<var roletext="house electrician" rolecode="elg"/>
-		<var roletext="master electrician" rolecode="elg"/>
-	</term>
-	<term roletext="electrotyper" rolecode="elt" uri="http://id.loc.gov/vocabulary/relators/elt"/>
-	<term roletext="enacting jurisdiction" rolecode="enj" uri="http://id.loc.gov/vocabulary/relators/enj"/>
-	<term roletext="engineer" rolecode="eng" uri="http://id.loc.gov/vocabulary/relators/eng"/>
-	<term roletext="engraver" rolecode="egr" uri="http://id.loc.gov/vocabulary/relators/egr"/>
-	<term roletext="etcher" rolecode="etr" uri="http://id.loc.gov/vocabulary/relators/etr"/>
-	<term roletext="event place" rolecode="evp" uri="http://id.loc.gov/vocabulary/relators/evp"/>
-	<term roletext="expert" rolecode="exp" uri="http://id.loc.gov/vocabulary/relators/exp">
-		<var roletext="appraiser" rolecode="exp"/>
-	</term>
-	<term roletext="facsimilist" rolecode="fac" uri="http://id.loc.gov/vocabulary/relators/fac">
-		<var roletext="copier" rolecode="fac"/>
-	</term>
-	<term roletext="field director" rolecode="fld" uri="http://id.loc.gov/vocabulary/relators/fld"/>
-	<term roletext="film distributor" rolecode="fds" uri="http://id.loc.gov/vocabulary/relators/fds"/>
-	<term roletext="film director" rolecode="fmd" uri="http://id.loc.gov/vocabulary/relators/fmd"/>
-	<term roletext="film editor" rolecode="flm" uri="http://id.loc.gov/vocabulary/relators/flm">
-		<var roletext="motion picture editor" rolecode="flm"/>
-	</term>
-	<term roletext="film producer" rolecode="fmp" uri="http://id.loc.gov/vocabulary/relators/fmp"/>
-	<term roletext="filmmaker" rolecode="fmk" uri="http://id.loc.gov/vocabulary/relators/fmk"/>
-	<term roletext="first party" rolecode="fpy" uri="http://id.loc.gov/vocabulary/relators/fpy"/>
-	<term roletext="forger" rolecode="frg" uri="http://id.loc.gov/vocabulary/relators/frg">
-		<var roletext="copier" rolecode="frg"/>
-		<var roletext="counterfeiter" rolecode="frg"/>
-	</term>
-	<term roletext="former owner" rolecode="fmo" uri="http://id.loc.gov/vocabulary/relators/fmo"/>
-	<term roletext="funder" rolecode="fnd" uri="http://id.loc.gov/vocabulary/relators/fnd"/>
-	<term roletext="geographic information specialist" rolecode="gis" uri="http://id.loc.gov/vocabulary/relators/gis">
-		<var roletext="geospatial information specialist" rolecode="gis"/>
-	</term>
-	<term roletext="honoree" rolecode="hnr" uri="http://id.loc.gov/vocabulary/relators/hnr">
-		<var roletext="honouree" rolecode="hnr"/>
-		<var roletext="honouree of item" rolecode="hnr"/>
-	</term>
-	<term roletext="host" rolecode="hst" uri="http://id.loc.gov/vocabulary/relators/hst"/>
-	<term roletext="host institution" rolecode="his" uri="http://id.loc.gov/vocabulary/relators/his"/>
-	<term roletext="illuminator" rolecode="ilu" uri="http://id.loc.gov/vocabulary/relators/ilu"/>
-	<term roletext="illustrator" rolecode="ill" uri="http://id.loc.gov/vocabulary/relators/ill"/>
-	<term roletext="inscriber" rolecode="ins" uri="http://id.loc.gov/vocabulary/relators/ins"/>
-	<term roletext="instrumentalist" rolecode="itr" uri="http://id.loc.gov/vocabulary/relators/itr"/>
-	<term roletext="interviewee" rolecode="ive" uri="http://id.loc.gov/vocabulary/relators/ive"/>
-	<term roletext="interviewer" rolecode="ivr" uri="http://id.loc.gov/vocabulary/relators/ivr"/>
-	<term roletext="inventor" rolecode="inv" uri="http://id.loc.gov/vocabulary/relators/inv">
-		<var roletext="patent inventor" rolecode="inv"/>
-	</term>
-	<term roletext="issuing body" rolecode="isb" uri="http://id.loc.gov/vocabulary/relators/isb"/>
-	<term roletext="judge" rolecode="jud" uri="http://id.loc.gov/vocabulary/relators/jud"/>
-	<term roletext="jurisdiction governed" rolecode="jug" uri="http://id.loc.gov/vocabulary/relators/jug"/>
-	<term roletext="laboratory" rolecode="lbr" uri="http://id.loc.gov/vocabulary/relators/lbr"/>
-	<term roletext="laboratory director" rolecode="ldr" uri="http://id.loc.gov/vocabulary/relators/ldr">
-		<var roletext="lab director" rolecode="ldr"/>
-	</term>
-	<term roletext="landscape architect" rolecode="lsa" uri="http://id.loc.gov/vocabulary/relators/lsa"/>
-	<term roletext="lead" rolecode="led" uri="http://id.loc.gov/vocabulary/relators/led"/>
-	<term roletext="lender" rolecode="len" uri="http://id.loc.gov/vocabulary/relators/len"/>
-	<term roletext="libelant" rolecode="lil" uri="http://id.loc.gov/vocabulary/relators/lil"/>
-	<term roletext="libelant-appellant" rolecode="lit" uri="http://id.loc.gov/vocabulary/relators/lit"/>
-	<term roletext="libelant-appellee" rolecode="lie" uri="http://id.loc.gov/vocabulary/relators/lie"/>
-	<term roletext="libelee" rolecode="lel" uri="http://id.loc.gov/vocabulary/relators/lel"/>
-	<term roletext="libelee-appellant" rolecode="let" uri="http://id.loc.gov/vocabulary/relators/let"/>
-	<term roletext="libelee-appellee" rolecode="lee" uri="http://id.loc.gov/vocabulary/relators/lee"/>
-	<term roletext="librettist" rolecode="lbt" uri="http://id.loc.gov/vocabulary/relators/lbt"/>
-	<term roletext="licensee" rolecode="lse" uri="http://id.loc.gov/vocabulary/relators/lse"/>
-	<term roletext="licensor" rolecode="lso" uri="http://id.loc.gov/vocabulary/relators/lso">
-		<var roletext="imprimatur" rolecode="lso"/>
-	</term>
-	<term roletext="lighting designer" rolecode="lgd" uri="http://id.loc.gov/vocabulary/relators/lgd"/>
-	<term roletext="lithographer" rolecode="ltg" uri="http://id.loc.gov/vocabulary/relators/ltg"/>
-	<term roletext="lyricist" rolecode="lyr" uri="http://id.loc.gov/vocabulary/relators/lyr"/>
-	<term roletext="manufacture place" rolecode="mfp" uri="http://id.loc.gov/vocabulary/relators/mfp"/>
-	<term roletext="manufacturer" rolecode="mfr" uri="http://id.loc.gov/vocabulary/relators/mfr"/>
-	<term roletext="marbler" rolecode="mrb" uri="http://id.loc.gov/vocabulary/relators/mrb"/>
-	<term roletext="markup editor" rolecode="mrk" uri="http://id.loc.gov/vocabulary/relators/mrk">
-		<var roletext="encoder" rolecode="mrk"/>
-	</term>
-	<term roletext="medium" rolecode="med" uri="http://id.loc.gov/vocabulary/relators/med"/>
-	<term roletext="metadata contact" rolecode="mdc" uri="http://id.loc.gov/vocabulary/relators/mdc"/>
-	<term roletext="metal-engraver" rolecode="mte" uri="http://id.loc.gov/vocabulary/relators/mte"/>
-	<term roletext="minute taker" rolecode="mtk" uri="http://id.loc.gov/vocabulary/relators/mtk"/>
-	<term roletext="moderator" rolecode="mod" uri="http://id.loc.gov/vocabulary/relators/mod"/>
-	<term roletext="monitor" rolecode="mon" uri="http://id.loc.gov/vocabulary/relators/mon"/>
-	<term roletext="music copyist" rolecode="mcp" uri="http://id.loc.gov/vocabulary/relators/mcp"/>
-	<term roletext="musical director" rolecode="msd" uri="http://id.loc.gov/vocabulary/relators/msd"/>
-	<term roletext="musician" rolecode="mus" uri="http://id.loc.gov/vocabulary/relators/mus"/>
-	<term roletext="narrator" rolecode="nrt" uri="http://id.loc.gov/vocabulary/relators/nrt"/>
-	<term roletext="onscreen presenter" rolecode="osp" uri="http://id.loc.gov/vocabulary/relators/osp"/>
-	<term roletext="opponent" rolecode="opn" uri="http://id.loc.gov/vocabulary/relators/opn"/>
-	<term roletext="organizer" rolecode="orm" uri="http://id.loc.gov/vocabulary/relators/orm">
-		<var roletext="organizer of meeting" rolecode="orm"/>
-	</term>
-	<term roletext="originator" rolecode="org" uri="http://id.loc.gov/vocabulary/relators/org"/>
-	<term roletext="other" rolecode="oth" uri="http://id.loc.gov/vocabulary/relators/oth"/>
-	<term roletext="owner" rolecode="own" uri="http://id.loc.gov/vocabulary/relators/own">
-		<var roletext="current owner" rolecode="own"/>
-	</term>
-	<term roletext="panelist" rolecode="pan" uri="http://id.loc.gov/vocabulary/relators/pan"/>
-	<term roletext="papermaker" rolecode="ppm" uri="http://id.loc.gov/vocabulary/relators/ppm"/>
-	<term roletext="patent applicant" rolecode="pta" uri="http://id.loc.gov/vocabulary/relators/pta"/>
-	<term roletext="patent holder" rolecode="pth" uri="http://id.loc.gov/vocabulary/relators/pth">
-		<var roletext="patentee" rolecode="pth"/>
-	</term>
-	<term roletext="patron" rolecode="pat" uri="http://id.loc.gov/vocabulary/relators/pat"/>
-	<term roletext="performer" rolecode="prf" uri="http://id.loc.gov/vocabulary/relators/prf"/>
-	<term roletext="permitting agency" rolecode="pma" uri="http://id.loc.gov/vocabulary/relators/pma"/>
-	<term roletext="photographer" rolecode="pht" uri="http://id.loc.gov/vocabulary/relators/pht"/>
-	<term roletext="plaintiff" rolecode="ptf" uri="http://id.loc.gov/vocabulary/relators/ptf"/>
-	<term roletext="plaintiff-appellant" rolecode="ptt" uri="http://id.loc.gov/vocabulary/relators/ptt"/>
-	<term roletext="plaintiff-appellee" rolecode="pte" uri="http://id.loc.gov/vocabulary/relators/pte"/>
-	<term roletext="platemaker" rolecode="plt" uri="http://id.loc.gov/vocabulary/relators/plt"/>
-	<term roletext="praeses" rolecode="pra" uri="http://id.loc.gov/vocabulary/relators/pra"/>
-	<term roletext="presenter" rolecode="pre" uri="http://id.loc.gov/vocabulary/relators/pre"/>
-	<term roletext="printer" rolecode="prt" uri="http://id.loc.gov/vocabulary/relators/prt"/>
-	<term roletext="printer of plates" rolecode="pop" uri="http://id.loc.gov/vocabulary/relators/pop">
-		<var roletext="plates, printer of" rolecode="pop"/>
-	</term>
-	<term roletext="printmaker" rolecode="prm" uri="http://id.loc.gov/vocabulary/relators/prm"/>
-	<term roletext="process contact" rolecode="prc" uri="http://id.loc.gov/vocabulary/relators/prc"/>
-	<term roletext="producer" rolecode="pro" uri="http://id.loc.gov/vocabulary/relators/pro"/>
-	<term roletext="production company" rolecode="prn" uri="http://id.loc.gov/vocabulary/relators/prn"/>
-	<term roletext="production designer" rolecode="prs" uri="http://id.loc.gov/vocabulary/relators/prs"/>
-	<term roletext="production manager" rolecode="pmn" uri="http://id.loc.gov/vocabulary/relators/pmn"/>
-	<term roletext="production personnel" rolecode="prd" uri="http://id.loc.gov/vocabulary/relators/prd"/>
-	<term roletext="production place" rolecode="prp" uri="http://id.loc.gov/vocabulary/relators/prp"/>
-	<term roletext="programmer" rolecode="prg" uri="http://id.loc.gov/vocabulary/relators/prg"/>
-	<term roletext="project director" rolecode="pdr" uri="http://id.loc.gov/vocabulary/relators/pdr"/>
-	<term roletext="proofreader" rolecode="pfr" uri="http://id.loc.gov/vocabulary/relators/pfr"/>
-	<term roletext="provider" rolecode="prv" uri="http://id.loc.gov/vocabulary/relators/prv"/>
-	<term roletext="publication place" rolecode="pup" uri="http://id.loc.gov/vocabulary/relators/pup"/>
-	<term roletext="publisher" rolecode="pbl" uri="http://id.loc.gov/vocabulary/relators/pbl"/>
-	<term roletext="publishing director" rolecode="pbd" uri="http://id.loc.gov/vocabulary/relators/pbd"/>
-	<term roletext="puppeteer" rolecode="ppt" uri="http://id.loc.gov/vocabulary/relators/ppt"/>
-	<term roletext="radio director" rolecode="rdd" uri="http://id.loc.gov/vocabulary/relators/rdd"/>
-	<term roletext="radio producer" rolecode="rpc" uri="http://id.loc.gov/vocabulary/relators/rpc"/>
-	<term roletext="recording engineer" rolecode="rce" uri="http://id.loc.gov/vocabulary/relators/rce"/>
-	<term roletext="recordist" rolecode="rcd" uri="http://id.loc.gov/vocabulary/relators/rcd"/>
-	<term roletext="redaktor" rolecode="red" uri="http://id.loc.gov/vocabulary/relators/red"/>
-	<term roletext="renderer" rolecode="ren" uri="http://id.loc.gov/vocabulary/relators/ren"/>
-	<term roletext="reporter" rolecode="rpt" uri="http://id.loc.gov/vocabulary/relators/rpt"/>
-	<term roletext="repository" rolecode="rps" uri="http://id.loc.gov/vocabulary/relators/rps"/>
-	<term roletext="research team head" rolecode="rth" uri="http://id.loc.gov/vocabulary/relators/rth"/>
-	<term roletext="research team member" rolecode="rtm" uri="http://id.loc.gov/vocabulary/relators/rtm"/>
-	<term roletext="researcher" rolecode="res" uri="http://id.loc.gov/vocabulary/relators/res">
-		<var roletext="performer of research" rolecode="res"/>
-	</term>
-	<term roletext="respondent" rolecode="rsp" uri="http://id.loc.gov/vocabulary/relators/rsp"/>
-	<term roletext="respondent-appellant" rolecode="rst" uri="http://id.loc.gov/vocabulary/relators/rst"/>
-	<term roletext="respondent-appellee" rolecode="rse" uri="http://id.loc.gov/vocabulary/relators/rse"/>
-	<term roletext="responsible party" rolecode="rpy" uri="http://id.loc.gov/vocabulary/relators/rpy"/>
-	<term roletext="restager" rolecode="rsg" uri="http://id.loc.gov/vocabulary/relators/rsg"/>
-	<term roletext="restorationist" rolecode="rsr" uri="http://id.loc.gov/vocabulary/relators/rsr"/>
-	<term roletext="reviewer" rolecode="rev" uri="http://id.loc.gov/vocabulary/relators/rev"/>
-	<term roletext="rubricator" rolecode="rbr" uri="http://id.loc.gov/vocabulary/relators/rbr"/>
-	<term roletext="scenarist" rolecode="sce" uri="http://id.loc.gov/vocabulary/relators/sce"/>
-	<term roletext="scientific advisor" rolecode="sad" uri="http://id.loc.gov/vocabulary/relators/sad"/>
-	<term roletext="screenwriter" rolecode="aus" uri="http://id.loc.gov/vocabulary/relators/aus">
-		<var roletext="author of screenplay, etc." rolecode="aus"/>
-	</term>
-	<term roletext="scribe" rolecode="scr" uri="http://id.loc.gov/vocabulary/relators/scr"/>
-	<term roletext="sculptor" rolecode="scl" uri="http://id.loc.gov/vocabulary/relators/scl"/>
-	<term roletext="second party" rolecode="spy" uri="http://id.loc.gov/vocabulary/relators/spy"/>
-	<term roletext="secretary" rolecode="sec" uri="http://id.loc.gov/vocabulary/relators/sec"/>
-	<term roletext="seller" rolecode="sll" uri="http://id.loc.gov/vocabulary/relators/sll"/>
-	<term roletext="set designer" rolecode="std" uri="http://id.loc.gov/vocabulary/relators/std"/>
-	<term roletext="setting" rolecode="stg" uri="http://id.loc.gov/vocabulary/relators/stg"/>
-	<term roletext="signer" rolecode="sgn" uri="http://id.loc.gov/vocabulary/relators/sgn"/>
-	<term roletext="singer" rolecode="sng" uri="http://id.loc.gov/vocabulary/relators/sng">
-		<var roletext="vocalist" rolecode="sng"/>
-	</term>
-	<term roletext="sound designer" rolecode="sds" uri="http://id.loc.gov/vocabulary/relators/sds"/>
-	<term roletext="speaker" rolecode="spk" uri="http://id.loc.gov/vocabulary/relators/spk"/>
-	<term roletext="sponsor" rolecode="spn" uri="http://id.loc.gov/vocabulary/relators/spn">
-		<var roletext="sponsoring body" rolecode="spn"/>
-	</term>
-	<term roletext="stage director" rolecode="sgd" uri="http://id.loc.gov/vocabulary/relators/sgd"/>
-	<term roletext="stage manager" rolecode="stm" uri="http://id.loc.gov/vocabulary/relators/stm"/>
-	<term roletext="standards body" rolecode="stn" uri="http://id.loc.gov/vocabulary/relators/stn"/>
-	<term roletext="stereotyper" rolecode="str" uri="http://id.loc.gov/vocabulary/relators/str"/>
-	<term roletext="storyteller" rolecode="stl" uri="http://id.loc.gov/vocabulary/relators/stl"/>
-	<term roletext="supporting host" rolecode="sht" uri="http://id.loc.gov/vocabulary/relators/sht">
-		<var roletext="host, supporting" rolecode="sht"/>
-	</term>
-	<term roletext="surveyor" rolecode="srv" uri="http://id.loc.gov/vocabulary/relators/srv"/>
-	<term roletext="teacher" rolecode="tch" uri="http://id.loc.gov/vocabulary/relators/tch">
-		<var roletext="instructor" rolecode="tch"/>
-	</term>
-	<term roletext="technical director" rolecode="tcd" uri="http://id.loc.gov/vocabulary/relators/tcd"/>
-	<term roletext="television director" rolecode="tld" uri="http://id.loc.gov/vocabulary/relators/tld"/>
-	<term roletext="television producer" rolecode="tlp" uri="http://id.loc.gov/vocabulary/relators/tlp"/>
-	<term roletext="thesis advisor" rolecode="ths" uri="http://id.loc.gov/vocabulary/relators/ths">
-		<var roletext="promoter" rolecode="ths"/>
-	</term>
-	<term roletext="transcriber" rolecode="trc" uri="http://id.loc.gov/vocabulary/relators/trc"/>
-	<term roletext="translator" rolecode="trl" uri="http://id.loc.gov/vocabulary/relators/trl"/>
-	<term roletext="type designer" rolecode="tyd" uri="http://id.loc.gov/vocabulary/relators/tyd">
-		<var roletext="designer of type" rolecode="tyd"/>
-	</term>
-	<term roletext="typographer" rolecode="tyg" uri="http://id.loc.gov/vocabulary/relators/tyg"/>
-	<term roletext="university place" rolecode="uvp" uri="http://id.loc.gov/vocabulary/relators/uvp"/>
-	<term roletext="videographer" rolecode="vdg" uri="http://id.loc.gov/vocabulary/relators/vdg"/>
-	<term roletext="voice actor" rolecode="vac" uri="http://id.loc.gov/vocabulary/relators/vac"/>
-	<term roletext="witness" rolecode="wit" uri="http://id.loc.gov/vocabulary/relators/wit">    
-		<var roletext="deponent" rolecode="wit"/>
-		<var roletext="eyewitness" rolecode="wit"/>
-		<var roletext="observer" rolecode="wit"/>
-		<var roletext="onlooker" rolecode="wit"/>
-		<var roletext="testifier" rolecode="wit"/>
-	</term>
-	<term roletext="wood engraver" rolecode="wde" uri="http://id.loc.gov/vocabulary/relators/wde"/>
-	<term roletext="woodcutter" rolecode="wdc" uri="http://id.loc.gov/vocabulary/relators/wdc"/>
-	<term roletext="writer of accompanying material" rolecode="wam" uri="http://id.loc.gov/vocabulary/relators/wam"/>
-	<term roletext="writer of added commentary" rolecode="wac" uri="http://id.loc.gov/vocabulary/relators/wac"/>
-	<term roletext="writer of added text" rolecode="wat" uri="http://id.loc.gov/vocabulary/relators/wat"/>
-	<term roletext="writer of added lyrics" rolecode="wal" uri="http://id.loc.gov/vocabulary/relators/wal"/>
-	<term roletext="writer of supplementary textual content" rolecode="wst" uri="http://id.loc.gov/vocabulary/relators/wst"/>
-	<term roletext="writer of introduction" rolecode="win" uri="http://id.loc.gov/vocabulary/relators/win"/>
-	<term roletext="writer of preface" rolecode="wpr" uri="http://id.loc.gov/vocabulary/relators/wpr"/>
-	<term roletext="collaborator" rolecode="ctb" uri="http://id.loc.gov/vocabulary/relators/ctb" deprecated="yes"/>
-	<term roletext="graphic technician" rolecode="art" uri="http://id.loc.gov/vocabulary/relators/art" deprecated="yes"/>
-	<term roletext="vocalist" rolecode="sng" uri="http://id.loc.gov/vocabulary/relators/sng" deprecated="yes"/>
+(<relators updated="2014-10-24">
+        <term roletext="abridger" rolecode="abr" uri="http://id.loc.gov/vocabulary/relators/abr"/>
+        <term roletext="actor" rolecode="act" uri="http://id.loc.gov/vocabulary/relators/act"/>
+        <term roletext="adapter" rolecode="adp" uri="http://id.loc.gov/vocabulary/relators/adp"/>
+        <term roletext="addressee" rolecode="rcp" uri="http://id.loc.gov/vocabulary/relators/rcp">
+                <var roletext="recipient" rolecode="rcp"/>
+        </term>
+        <term roletext="analyst" rolecode="anl" uri="http://id.loc.gov/vocabulary/relators/anl"/>
+        <term roletext="animator" rolecode="anm" uri="http://id.loc.gov/vocabulary/relators/anm"/>
+        <term roletext="annotator" rolecode="ann" uri="http://id.loc.gov/vocabulary/relators/ann"/>
+        <term roletext="appellant" rolecode="apl" uri="http://id.loc.gov/vocabulary/relators/apl"/>
+        <term roletext="appellee" rolecode="ape" uri="http://id.loc.gov/vocabulary/relators/ape"/>
+        <term roletext="applicant" rolecode="app" uri="http://id.loc.gov/vocabulary/relators/app"/>
+        <term roletext="architect" rolecode="arc" uri="http://id.loc.gov/vocabulary/relators/arc"/>
+        <term roletext="arranger" rolecode="arr" uri="http://id.loc.gov/vocabulary/relators/arr">
+                <var roletext="arranger of music" rolecode="arr"/>
+        </term>
+        <term roletext="art copyist" rolecode="acp" uri="http://id.loc.gov/vocabulary/relators/acp"/>
+        <term roletext="art director" rolecode="adi" uri="http://id.loc.gov/vocabulary/relators/adi"/>
+        <term roletext="artist" rolecode="art" uri="http://id.loc.gov/vocabulary/relators/art">
+                <var roletext="graphic technician" rolecode="art"/>
+        </term>
+        <term roletext="artistic director" rolecode="ard" uri="http://id.loc.gov/vocabulary/relators/ard"/>
+        <term roletext="assignee" rolecode="asg" uri="http://id.loc.gov/vocabulary/relators/asg"/>
+        <term roletext="associated name" rolecode="asn" uri="http://id.loc.gov/vocabulary/relators/asn"/>
+        <term roletext="attributed name" rolecode="att" uri="http://id.loc.gov/vocabulary/relators/att">
+                <var roletext="supposed name" rolecode="att"/>
+        </term>
+        <term roletext="auctioneer" rolecode="auc" uri="http://id.loc.gov/vocabulary/relators/auc"/>
+        <term roletext="author" rolecode="aut" uri="http://id.loc.gov/vocabulary/relators/aut">
+                <var roletext="joint author" rolecode="aut"/>
+        </term>
+        <term roletext="author in quotations or text abstracts" rolecode="aqt" uri="http://id.loc.gov/vocabulary/relators/aqt"/>
+        <term roletext="author of afterword, colophon, etc." rolecode="aft" uri="http://id.loc.gov/vocabulary/relators/aft"/>
+        <term roletext="author of dialog" rolecode="aud" uri="http://id.loc.gov/vocabulary/relators/aud"/>
+        <term roletext="author of introduction, etc." rolecode="aui" uri="http://id.loc.gov/vocabulary/relators/aui"/>
+        <term roletext="autographer" rolecode="ato" uri="http://id.loc.gov/vocabulary/relators/ato"/>
+        <term roletext="bibliographic antecedent" rolecode="ant" uri="http://id.loc.gov/vocabulary/relators/ant"/>
+        <term roletext="binder" rolecode="bnd" uri="http://id.loc.gov/vocabulary/relators/bnd"/>
+        <term roletext="binding designer" rolecode="bdd" uri="http://id.loc.gov/vocabulary/relators/bdd">
+                <var roletext="designer of binding" rolecode="bdd"/>
+        </term>
+        <term roletext="blurb writer" rolecode="blw" uri="http://id.loc.gov/vocabulary/relators/blw"/>
+        <term roletext="book designer" rolecode="bkd" uri="http://id.loc.gov/vocabulary/relators/bkd">
+                <var roletext="designer of book" rolecode="bkd"/>
+                <var roletext="designer of e-book" rolecode="bkd"/>
+        </term>
+        <term roletext="book producer" rolecode="bkp" uri="http://id.loc.gov/vocabulary/relators/bkp">
+                <var roletext="producer of book" rolecode="bkp"/>
+        </term>
+        <term roletext="bookjacket designer" rolecode="bjd" uri="http://id.loc.gov/vocabulary/relators/bjd">
+                <var roletext="designer of bookjacket" rolecode="bjd"/>
+        </term>
+        <term roletext="bookplate designer" rolecode="bpd" uri="http://id.loc.gov/vocabulary/relators/bpd"/>
+        <term roletext="bookseller" rolecode="bsl" uri="http://id.loc.gov/vocabulary/relators/bsl"/>
+        <term roletext="braille embosser" rolecode="brl" uri="http://id.loc.gov/vocabulary/relators/brl"/>
+        <term roletext="broadcaster" rolecode="brd" uri="http://id.loc.gov/vocabulary/relators/brd"/>
+        <term roletext="calligrapher" rolecode="cll" uri="http://id.loc.gov/vocabulary/relators/cll"/>
+        <term roletext="cartographer" rolecode="ctg" uri="http://id.loc.gov/vocabulary/relators/ctg"/>
+        <term roletext="caster" rolecode="cas" uri="http://id.loc.gov/vocabulary/relators/cas"/>
+        <term roletext="censor" rolecode="cns" uri="http://id.loc.gov/vocabulary/relators/cns">
+                <var roletext="bowdlerizer" rolecode="cns"/>
+                <var roletext="expurgator" rolecode="cns"/>
+        </term>
+        <term roletext="choreographer" rolecode="chr" uri="http://id.loc.gov/vocabulary/relators/chr"/>
+        <term roletext="cinematographer" rolecode="cng" uri="http://id.loc.gov/vocabulary/relators/cng">
+                <var roletext="director of photography" rolecode="cng"/>
+        </term>
+        <term roletext="client" rolecode="cli" uri="http://id.loc.gov/vocabulary/relators/cli"/>
+        <term roletext="collection registrar" rolecode="cor" uri="http://id.loc.gov/vocabulary/relators/cor"/>
+        <term roletext="collector" rolecode="col" uri="http://id.loc.gov/vocabulary/relators/col"/>
+        <term roletext="collotyper" rolecode="clt" uri="http://id.loc.gov/vocabulary/relators/clt"/>
+        <term roletext="colorist" rolecode="clr" uri="http://id.loc.gov/vocabulary/relators/clr"/>
+        <term roletext="commentator" rolecode="cmm" uri="http://id.loc.gov/vocabulary/relators/cmm"/>
+        <term roletext="commentator for written text" rolecode="cwt" uri="http://id.loc.gov/vocabulary/relators/cwt"/>
+        <term roletext="compiler" rolecode="com" uri="http://id.loc.gov/vocabulary/relators/com"/>
+        <term roletext="complainant" rolecode="cpl" uri="http://id.loc.gov/vocabulary/relators/cpl"/>
+        <term roletext="complainant-appellant" rolecode="cpt" uri="http://id.loc.gov/vocabulary/relators/cpt"/>
+        <term roletext="complainant-appellee" rolecode="cpe" uri="http://id.loc.gov/vocabulary/relators/cpe"/>
+        <term roletext="composer" rolecode="cmp" uri="http://id.loc.gov/vocabulary/relators/cmp"/>
+        <term roletext="compositor" rolecode="cmt" uri="http://id.loc.gov/vocabulary/relators/cmt">
+                <var roletext="typesetter" rolecode="cmt"/>
+        </term>
+        <term roletext="conceptor" rolecode="ccp" uri="http://id.loc.gov/vocabulary/relators/ccp"/>
+        <term roletext="conductor" rolecode="cnd" uri="http://id.loc.gov/vocabulary/relators/cnd"/>
+        <term roletext="conservator" rolecode="con" uri="http://id.loc.gov/vocabulary/relators/con">
+                <var roletext="preservationist" rolecode="con"/>
+        </term>
+        <term roletext="consultant" rolecode="csl" uri="http://id.loc.gov/vocabulary/relators/csl"/>
+        <term roletext="consultant to a project" rolecode="csp" uri="http://id.loc.gov/vocabulary/relators/csp"/>
+        <term roletext="contestant" rolecode="cos" uri="http://id.loc.gov/vocabulary/relators/cos"/>
+        <term roletext="contestant-appellant" rolecode="cot" uri="http://id.loc.gov/vocabulary/relators/cot"/>
+        <term roletext="contestant-appellee" rolecode="coe" uri="http://id.loc.gov/vocabulary/relators/coe"/>
+        <term roletext="contestee" rolecode="cts" uri="http://id.loc.gov/vocabulary/relators/cts"/>
+        <term roletext="contestee-appellant" rolecode="ctt" uri="http://id.loc.gov/vocabulary/relators/ctt"/>
+        <term roletext="contestee-appellee" rolecode="cte" uri="http://id.loc.gov/vocabulary/relators/cte"/>
+        <term roletext="contractor" rolecode="ctr" uri="http://id.loc.gov/vocabulary/relators/ctr"/>
+        <term roletext="contributor" rolecode="ctb" uri="http://id.loc.gov/vocabulary/relators/ctb">
+                <var roletext="collaborator" rolecode="ctb"/>
+        </term>
+        <term roletext="copyright claimant" rolecode="cpc" uri="http://id.loc.gov/vocabulary/relators/cpc"/>
+        <term roletext="copyright holder" rolecode="cph" uri="http://id.loc.gov/vocabulary/relators/cph"/>
+        <term roletext="corrector" rolecode="crr" uri="http://id.loc.gov/vocabulary/relators/crr"/>
+        <term roletext="correspondent" rolecode="crp" uri="http://id.loc.gov/vocabulary/relators/crp"/>
+        <term roletext="costume designer" rolecode="cst" uri="http://id.loc.gov/vocabulary/relators/cst"/>
+        <term roletext="court governed" rolecode="cou" uri="http://id.loc.gov/vocabulary/relators/cou"/>
+        <term roletext="court reporter" rolecode="crt" uri="http://id.loc.gov/vocabulary/relators/crt"/>
+        <term roletext="cover designer" rolecode="cov" uri="http://id.loc.gov/vocabulary/relators/cov">
+                <var roletext="designer of cover" rolecode="cov"/>
+        </term>
+        <term roletext="creator" rolecode="cre" uri="http://id.loc.gov/vocabulary/relators/cre"/>
+        <term roletext="curator" rolecode="cur" uri="http://id.loc.gov/vocabulary/relators/cur">
+                <var roletext="curator of an exhibition" rolecode="cur"/>
+        </term>
+        <term roletext="dancer" rolecode="dnc" uri="http://id.loc.gov/vocabulary/relators/dnc"/>
+        <term roletext="data contributor" rolecode="dtc" uri="http://id.loc.gov/vocabulary/relators/dtc"/>
+        <term roletext="data manager" rolecode="dtm" uri="http://id.loc.gov/vocabulary/relators/dtm"/>
+        <term roletext="dedicatee" rolecode="dte" uri="http://id.loc.gov/vocabulary/relators/dte">
+                <var roletext="dedicatee of item" rolecode="dte"/>
+        </term>
+        <term roletext="dedicator" rolecode="dto" uri="http://id.loc.gov/vocabulary/relators/dto"/>
+        <term roletext="defendant" rolecode="dfd" uri="http://id.loc.gov/vocabulary/relators/dfd"/>
+        <term roletext="defendant-appellant" rolecode="dft" uri="http://id.loc.gov/vocabulary/relators/dft"/>
+        <term roletext="defendant-appellee" rolecode="dfe" uri="http://id.loc.gov/vocabulary/relators/dfe"/>
+        <term roletext="degree granting institution" rolecode="dgg" uri="http://id.loc.gov/vocabulary/relators/dgg">
+                <var roletext="degree grantor" rolecode="dgg"/>
+        </term>
+        <term roletext="degree supervisor" rolecode="dgs" uri="http://id.loc.gov/vocabulary/relators/dgs"/>
+        <term roletext="delineator" rolecode="dln" uri="http://id.loc.gov/vocabulary/relators/dln"/>
+        <term roletext="depicted" rolecode="dpc" uri="http://id.loc.gov/vocabulary/relators/dpc"/>
+        <term roletext="depositor" rolecode="dpt" uri="http://id.loc.gov/vocabulary/relators/dpt"/>
+        <term roletext="designer" rolecode="dsr" uri="http://id.loc.gov/vocabulary/relators/dsr"/>
+        <term roletext="director" rolecode="drt" uri="http://id.loc.gov/vocabulary/relators/drt"/>
+        <term roletext="dissertant" rolecode="dis" uri="http://id.loc.gov/vocabulary/relators/dis"/>
+        <term roletext="distribution place" rolecode="dbp" uri="http://id.loc.gov/vocabulary/relators/dbp"/>
+        <term roletext="distributor" rolecode="dst" uri="http://id.loc.gov/vocabulary/relators/dst"/>
+        <term roletext="donor" rolecode="dnr" uri="http://id.loc.gov/vocabulary/relators/dnr"/>
+        <term roletext="draftsman" rolecode="drm" uri="http://id.loc.gov/vocabulary/relators/drm">
+                <var roletext="technical draftsman" rolecode="drm"/>
+        </term>
+        <term roletext="dubious author" rolecode="dub" uri="http://id.loc.gov/vocabulary/relators/dub"/>
+        <term roletext="editor" rolecode="edt" uri="http://id.loc.gov/vocabulary/relators/edt"/>
+        <term roletext="editor of compilation" rolecode="edc" uri="http://id.loc.gov/vocabulary/relators/edc"/>
+        <term roletext="editor of moving image work" rolecode="edm" uri="http://id.loc.gov/vocabulary/relators/edm">
+                <var roletext="moving image work editor" rolecode="edm"/>
+        </term>
+        <term roletext="electrician" rolecode="elg" uri="http://id.loc.gov/vocabulary/relators/elg">
+                <var roletext="chief electrician" rolecode="elg"/>
+                <var roletext="house electrician" rolecode="elg"/>
+                <var roletext="master electrician" rolecode="elg"/>
+        </term>
+        <term roletext="electrotyper" rolecode="elt" uri="http://id.loc.gov/vocabulary/relators/elt"/>
+        <term roletext="enacting jurisdiction" rolecode="enj" uri="http://id.loc.gov/vocabulary/relators/enj"/>
+        <term roletext="engineer" rolecode="eng" uri="http://id.loc.gov/vocabulary/relators/eng"/>
+        <term roletext="engraver" rolecode="egr" uri="http://id.loc.gov/vocabulary/relators/egr"/>
+        <term roletext="etcher" rolecode="etr" uri="http://id.loc.gov/vocabulary/relators/etr"/>
+        <term roletext="event place" rolecode="evp" uri="http://id.loc.gov/vocabulary/relators/evp"/>
+        <term roletext="expert" rolecode="exp" uri="http://id.loc.gov/vocabulary/relators/exp">
+                <var roletext="appraiser" rolecode="exp"/>
+        </term>
+        <term roletext="facsimilist" rolecode="fac" uri="http://id.loc.gov/vocabulary/relators/fac">
+                <var roletext="copier" rolecode="fac"/>
+        </term>
+        <term roletext="field director" rolecode="fld" uri="http://id.loc.gov/vocabulary/relators/fld"/>
+        <term roletext="film distributor" rolecode="fds" uri="http://id.loc.gov/vocabulary/relators/fds"/>
+        <term roletext="film director" rolecode="fmd" uri="http://id.loc.gov/vocabulary/relators/fmd"/>
+        <term roletext="film editor" rolecode="flm" uri="http://id.loc.gov/vocabulary/relators/flm">
+                <var roletext="motion picture editor" rolecode="flm"/>
+        </term>
+        <term roletext="film producer" rolecode="fmp" uri="http://id.loc.gov/vocabulary/relators/fmp"/>
+        <term roletext="filmmaker" rolecode="fmk" uri="http://id.loc.gov/vocabulary/relators/fmk"/>
+        <term roletext="first party" rolecode="fpy" uri="http://id.loc.gov/vocabulary/relators/fpy"/>
+        <term roletext="forger" rolecode="frg" uri="http://id.loc.gov/vocabulary/relators/frg">
+                <var roletext="copier" rolecode="frg"/>
+                <var roletext="counterfeiter" rolecode="frg"/>
+        </term>
+        <term roletext="former owner" rolecode="fmo" uri="http://id.loc.gov/vocabulary/relators/fmo"/>
+        <term roletext="funder" rolecode="fnd" uri="http://id.loc.gov/vocabulary/relators/fnd"/>
+        <term roletext="geographic information specialist" rolecode="gis" uri="http://id.loc.gov/vocabulary/relators/gis">
+                <var roletext="geospatial information specialist" rolecode="gis"/>
+        </term>
+        <term roletext="honoree" rolecode="hnr" uri="http://id.loc.gov/vocabulary/relators/hnr">
+                <var roletext="honouree" rolecode="hnr"/>
+                <var roletext="honouree of item" rolecode="hnr"/>
+        </term>
+        <term roletext="host" rolecode="hst" uri="http://id.loc.gov/vocabulary/relators/hst"/>
+        <term roletext="host institution" rolecode="his" uri="http://id.loc.gov/vocabulary/relators/his"/>
+        <term roletext="illuminator" rolecode="ilu" uri="http://id.loc.gov/vocabulary/relators/ilu"/>
+        <term roletext="illustrator" rolecode="ill" uri="http://id.loc.gov/vocabulary/relators/ill"/>
+        <term roletext="inscriber" rolecode="ins" uri="http://id.loc.gov/vocabulary/relators/ins"/>
+        <term roletext="instrumentalist" rolecode="itr" uri="http://id.loc.gov/vocabulary/relators/itr"/>
+        <term roletext="interviewee" rolecode="ive" uri="http://id.loc.gov/vocabulary/relators/ive"/>
+        <term roletext="interviewer" rolecode="ivr" uri="http://id.loc.gov/vocabulary/relators/ivr"/>
+        <term roletext="inventor" rolecode="inv" uri="http://id.loc.gov/vocabulary/relators/inv">
+                <var roletext="patent inventor" rolecode="inv"/>
+        </term>
+        <term roletext="issuing body" rolecode="isb" uri="http://id.loc.gov/vocabulary/relators/isb"/>
+        <term roletext="judge" rolecode="jud" uri="http://id.loc.gov/vocabulary/relators/jud"/>
+        <term roletext="jurisdiction governed" rolecode="jug" uri="http://id.loc.gov/vocabulary/relators/jug"/>
+        <term roletext="laboratory" rolecode="lbr" uri="http://id.loc.gov/vocabulary/relators/lbr"/>
+        <term roletext="laboratory director" rolecode="ldr" uri="http://id.loc.gov/vocabulary/relators/ldr">
+                <var roletext="lab director" rolecode="ldr"/>
+        </term>
+        <term roletext="landscape architect" rolecode="lsa" uri="http://id.loc.gov/vocabulary/relators/lsa"/>
+        <term roletext="lead" rolecode="led" uri="http://id.loc.gov/vocabulary/relators/led"/>
+        <term roletext="lender" rolecode="len" uri="http://id.loc.gov/vocabulary/relators/len"/>
+        <term roletext="libelant" rolecode="lil" uri="http://id.loc.gov/vocabulary/relators/lil"/>
+        <term roletext="libelant-appellant" rolecode="lit" uri="http://id.loc.gov/vocabulary/relators/lit"/>
+        <term roletext="libelant-appellee" rolecode="lie" uri="http://id.loc.gov/vocabulary/relators/lie"/>
+        <term roletext="libelee" rolecode="lel" uri="http://id.loc.gov/vocabulary/relators/lel"/>
+        <term roletext="libelee-appellant" rolecode="let" uri="http://id.loc.gov/vocabulary/relators/let"/>
+        <term roletext="libelee-appellee" rolecode="lee" uri="http://id.loc.gov/vocabulary/relators/lee"/>
+        <term roletext="librettist" rolecode="lbt" uri="http://id.loc.gov/vocabulary/relators/lbt"/>
+        <term roletext="licensee" rolecode="lse" uri="http://id.loc.gov/vocabulary/relators/lse"/>
+        <term roletext="licensor" rolecode="lso" uri="http://id.loc.gov/vocabulary/relators/lso">
+                <var roletext="imprimatur" rolecode="lso"/>
+        </term>
+        <term roletext="lighting designer" rolecode="lgd" uri="http://id.loc.gov/vocabulary/relators/lgd"/>
+        <term roletext="lithographer" rolecode="ltg" uri="http://id.loc.gov/vocabulary/relators/ltg"/>
+        <term roletext="lyricist" rolecode="lyr" uri="http://id.loc.gov/vocabulary/relators/lyr"/>
+        <term roletext="manufacture place" rolecode="mfp" uri="http://id.loc.gov/vocabulary/relators/mfp"/>
+        <term roletext="manufacturer" rolecode="mfr" uri="http://id.loc.gov/vocabulary/relators/mfr"/>
+        <term roletext="marbler" rolecode="mrb" uri="http://id.loc.gov/vocabulary/relators/mrb"/>
+        <term roletext="markup editor" rolecode="mrk" uri="http://id.loc.gov/vocabulary/relators/mrk">
+                <var roletext="encoder" rolecode="mrk"/>
+        </term>
+        <term roletext="medium" rolecode="med" uri="http://id.loc.gov/vocabulary/relators/med"/>
+        <term roletext="metadata contact" rolecode="mdc" uri="http://id.loc.gov/vocabulary/relators/mdc"/>
+        <term roletext="metal-engraver" rolecode="mte" uri="http://id.loc.gov/vocabulary/relators/mte"/>
+        <term roletext="minute taker" rolecode="mtk" uri="http://id.loc.gov/vocabulary/relators/mtk"/>
+        <term roletext="moderator" rolecode="mod" uri="http://id.loc.gov/vocabulary/relators/mod"/>
+        <term roletext="monitor" rolecode="mon" uri="http://id.loc.gov/vocabulary/relators/mon"/>
+        <term roletext="music copyist" rolecode="mcp" uri="http://id.loc.gov/vocabulary/relators/mcp"/>
+        <term roletext="musical director" rolecode="msd" uri="http://id.loc.gov/vocabulary/relators/msd"/>
+        <term roletext="musician" rolecode="mus" uri="http://id.loc.gov/vocabulary/relators/mus"/>
+        <term roletext="narrator" rolecode="nrt" uri="http://id.loc.gov/vocabulary/relators/nrt"/>
+        <term roletext="onscreen presenter" rolecode="osp" uri="http://id.loc.gov/vocabulary/relators/osp"/>
+        <term roletext="opponent" rolecode="opn" uri="http://id.loc.gov/vocabulary/relators/opn"/>
+        <term roletext="organizer" rolecode="orm" uri="http://id.loc.gov/vocabulary/relators/orm">
+                <var roletext="organizer of meeting" rolecode="orm"/>
+        </term>
+        <term roletext="originator" rolecode="org" uri="http://id.loc.gov/vocabulary/relators/org"/>
+        <term roletext="other" rolecode="oth" uri="http://id.loc.gov/vocabulary/relators/oth"/>
+        <term roletext="owner" rolecode="own" uri="http://id.loc.gov/vocabulary/relators/own">
+                <var roletext="current owner" rolecode="own"/>
+        </term>
+        <term roletext="panelist" rolecode="pan" uri="http://id.loc.gov/vocabulary/relators/pan"/>
+        <term roletext="papermaker" rolecode="ppm" uri="http://id.loc.gov/vocabulary/relators/ppm"/>
+        <term roletext="patent applicant" rolecode="pta" uri="http://id.loc.gov/vocabulary/relators/pta"/>
+        <term roletext="patent holder" rolecode="pth" uri="http://id.loc.gov/vocabulary/relators/pth">
+                <var roletext="patentee" rolecode="pth"/>
+        </term>
+        <term roletext="patron" rolecode="pat" uri="http://id.loc.gov/vocabulary/relators/pat"/>
+        <term roletext="performer" rolecode="prf" uri="http://id.loc.gov/vocabulary/relators/prf"/>
+        <term roletext="permitting agency" rolecode="pma" uri="http://id.loc.gov/vocabulary/relators/pma"/>
+        <term roletext="photographer" rolecode="pht" uri="http://id.loc.gov/vocabulary/relators/pht"/>
+        <term roletext="plaintiff" rolecode="ptf" uri="http://id.loc.gov/vocabulary/relators/ptf"/>
+        <term roletext="plaintiff-appellant" rolecode="ptt" uri="http://id.loc.gov/vocabulary/relators/ptt"/>
+        <term roletext="plaintiff-appellee" rolecode="pte" uri="http://id.loc.gov/vocabulary/relators/pte"/>
+        <term roletext="platemaker" rolecode="plt" uri="http://id.loc.gov/vocabulary/relators/plt"/>
+        <term roletext="praeses" rolecode="pra" uri="http://id.loc.gov/vocabulary/relators/pra"/>
+        <term roletext="presenter" rolecode="pre" uri="http://id.loc.gov/vocabulary/relators/pre"/>
+        <term roletext="printer" rolecode="prt" uri="http://id.loc.gov/vocabulary/relators/prt"/>
+        <term roletext="printer of plates" rolecode="pop" uri="http://id.loc.gov/vocabulary/relators/pop">
+                <var roletext="plates, printer of" rolecode="pop"/>
+        </term>
+        <term roletext="printmaker" rolecode="prm" uri="http://id.loc.gov/vocabulary/relators/prm"/>
+        <term roletext="process contact" rolecode="prc" uri="http://id.loc.gov/vocabulary/relators/prc"/>
+        <term roletext="producer" rolecode="pro" uri="http://id.loc.gov/vocabulary/relators/pro"/>
+        <term roletext="production company" rolecode="prn" uri="http://id.loc.gov/vocabulary/relators/prn"/>
+        <term roletext="production designer" rolecode="prs" uri="http://id.loc.gov/vocabulary/relators/prs"/>
+        <term roletext="production manager" rolecode="pmn" uri="http://id.loc.gov/vocabulary/relators/pmn"/>
+        <term roletext="production personnel" rolecode="prd" uri="http://id.loc.gov/vocabulary/relators/prd"/>
+        <term roletext="production place" rolecode="prp" uri="http://id.loc.gov/vocabulary/relators/prp"/>
+        <term roletext="programmer" rolecode="prg" uri="http://id.loc.gov/vocabulary/relators/prg"/>
+        <term roletext="project director" rolecode="pdr" uri="http://id.loc.gov/vocabulary/relators/pdr"/>
+        <term roletext="proofreader" rolecode="pfr" uri="http://id.loc.gov/vocabulary/relators/pfr"/>
+        <term roletext="provider" rolecode="prv" uri="http://id.loc.gov/vocabulary/relators/prv"/>
+        <term roletext="publication place" rolecode="pup" uri="http://id.loc.gov/vocabulary/relators/pup"/>
+        <term roletext="publisher" rolecode="pbl" uri="http://id.loc.gov/vocabulary/relators/pbl"/>
+        <term roletext="publishing director" rolecode="pbd" uri="http://id.loc.gov/vocabulary/relators/pbd"/>
+        <term roletext="puppeteer" rolecode="ppt" uri="http://id.loc.gov/vocabulary/relators/ppt"/>
+        <term roletext="radio director" rolecode="rdd" uri="http://id.loc.gov/vocabulary/relators/rdd"/>
+        <term roletext="radio producer" rolecode="rpc" uri="http://id.loc.gov/vocabulary/relators/rpc"/>
+        <term roletext="recording engineer" rolecode="rce" uri="http://id.loc.gov/vocabulary/relators/rce"/>
+        <term roletext="recordist" rolecode="rcd" uri="http://id.loc.gov/vocabulary/relators/rcd"/>
+        <term roletext="redaktor" rolecode="red" uri="http://id.loc.gov/vocabulary/relators/red"/>
+        <term roletext="renderer" rolecode="ren" uri="http://id.loc.gov/vocabulary/relators/ren"/>
+        <term roletext="reporter" rolecode="rpt" uri="http://id.loc.gov/vocabulary/relators/rpt"/>
+        <term roletext="repository" rolecode="rps" uri="http://id.loc.gov/vocabulary/relators/rps"/>
+        <term roletext="research team head" rolecode="rth" uri="http://id.loc.gov/vocabulary/relators/rth"/>
+        <term roletext="research team member" rolecode="rtm" uri="http://id.loc.gov/vocabulary/relators/rtm"/>
+        <term roletext="researcher" rolecode="res" uri="http://id.loc.gov/vocabulary/relators/res">
+                <var roletext="performer of research" rolecode="res"/>
+        </term>
+        <term roletext="respondent" rolecode="rsp" uri="http://id.loc.gov/vocabulary/relators/rsp"/>
+        <term roletext="respondent-appellant" rolecode="rst" uri="http://id.loc.gov/vocabulary/relators/rst"/>
+        <term roletext="respondent-appellee" rolecode="rse" uri="http://id.loc.gov/vocabulary/relators/rse"/>
+        <term roletext="responsible party" rolecode="rpy" uri="http://id.loc.gov/vocabulary/relators/rpy"/>
+        <term roletext="restager" rolecode="rsg" uri="http://id.loc.gov/vocabulary/relators/rsg"/>
+        <term roletext="restorationist" rolecode="rsr" uri="http://id.loc.gov/vocabulary/relators/rsr"/>
+        <term roletext="reviewer" rolecode="rev" uri="http://id.loc.gov/vocabulary/relators/rev"/>
+        <term roletext="rubricator" rolecode="rbr" uri="http://id.loc.gov/vocabulary/relators/rbr"/>
+        <term roletext="scenarist" rolecode="sce" uri="http://id.loc.gov/vocabulary/relators/sce"/>
+        <term roletext="scientific advisor" rolecode="sad" uri="http://id.loc.gov/vocabulary/relators/sad"/>
+        <term roletext="screenwriter" rolecode="aus" uri="http://id.loc.gov/vocabulary/relators/aus">
+                <var roletext="author of screenplay, etc." rolecode="aus"/>
+        </term>
+        <term roletext="scribe" rolecode="scr" uri="http://id.loc.gov/vocabulary/relators/scr"/>
+        <term roletext="sculptor" rolecode="scl" uri="http://id.loc.gov/vocabulary/relators/scl"/>
+        <term roletext="second party" rolecode="spy" uri="http://id.loc.gov/vocabulary/relators/spy"/>
+        <term roletext="secretary" rolecode="sec" uri="http://id.loc.gov/vocabulary/relators/sec"/>
+        <term roletext="seller" rolecode="sll" uri="http://id.loc.gov/vocabulary/relators/sll"/>
+        <term roletext="set designer" rolecode="std" uri="http://id.loc.gov/vocabulary/relators/std"/>
+        <term roletext="setting" rolecode="stg" uri="http://id.loc.gov/vocabulary/relators/stg"/>
+        <term roletext="signer" rolecode="sgn" uri="http://id.loc.gov/vocabulary/relators/sgn"/>
+        <term roletext="singer" rolecode="sng" uri="http://id.loc.gov/vocabulary/relators/sng">
+                <var roletext="vocalist" rolecode="sng"/>
+        </term>
+        <term roletext="sound designer" rolecode="sds" uri="http://id.loc.gov/vocabulary/relators/sds"/>
+        <term roletext="speaker" rolecode="spk" uri="http://id.loc.gov/vocabulary/relators/spk"/>
+        <term roletext="sponsor" rolecode="spn" uri="http://id.loc.gov/vocabulary/relators/spn">
+                <var roletext="sponsoring body" rolecode="spn"/>
+        </term>
+        <term roletext="stage director" rolecode="sgd" uri="http://id.loc.gov/vocabulary/relators/sgd"/>
+        <term roletext="stage manager" rolecode="stm" uri="http://id.loc.gov/vocabulary/relators/stm"/>
+        <term roletext="standards body" rolecode="stn" uri="http://id.loc.gov/vocabulary/relators/stn"/>
+        <term roletext="stereotyper" rolecode="str" uri="http://id.loc.gov/vocabulary/relators/str"/>
+        <term roletext="storyteller" rolecode="stl" uri="http://id.loc.gov/vocabulary/relators/stl"/>
+        <term roletext="supporting host" rolecode="sht" uri="http://id.loc.gov/vocabulary/relators/sht">
+                <var roletext="host, supporting" rolecode="sht"/>
+        </term>
+        <term roletext="surveyor" rolecode="srv" uri="http://id.loc.gov/vocabulary/relators/srv"/>
+        <term roletext="teacher" rolecode="tch" uri="http://id.loc.gov/vocabulary/relators/tch">
+                <var roletext="instructor" rolecode="tch"/>
+        </term>
+        <term roletext="technical director" rolecode="tcd" uri="http://id.loc.gov/vocabulary/relators/tcd"/>
+        <term roletext="television director" rolecode="tld" uri="http://id.loc.gov/vocabulary/relators/tld"/>
+        <term roletext="television producer" rolecode="tlp" uri="http://id.loc.gov/vocabulary/relators/tlp"/>
+        <term roletext="thesis advisor" rolecode="ths" uri="http://id.loc.gov/vocabulary/relators/ths">
+                <var roletext="promoter" rolecode="ths"/>
+        </term>
+        <term roletext="transcriber" rolecode="trc" uri="http://id.loc.gov/vocabulary/relators/trc"/>
+        <term roletext="translator" rolecode="trl" uri="http://id.loc.gov/vocabulary/relators/trl"/>
+        <term roletext="type designer" rolecode="tyd" uri="http://id.loc.gov/vocabulary/relators/tyd">
+                <var roletext="designer of type" rolecode="tyd"/>
+        </term>
+        <term roletext="typographer" rolecode="tyg" uri="http://id.loc.gov/vocabulary/relators/tyg"/>
+        <term roletext="university place" rolecode="uvp" uri="http://id.loc.gov/vocabulary/relators/uvp"/>
+        <term roletext="videographer" rolecode="vdg" uri="http://id.loc.gov/vocabulary/relators/vdg"/>
+        <term roletext="voice actor" rolecode="vac" uri="http://id.loc.gov/vocabulary/relators/vac"/>
+        <term roletext="witness" rolecode="wit" uri="http://id.loc.gov/vocabulary/relators/wit">
+                <var roletext="deponent" rolecode="wit"/>
+                <var roletext="eyewitness" rolecode="wit"/>
+                <var roletext="observer" rolecode="wit"/>
+                <var roletext="onlooker" rolecode="wit"/>
+                <var roletext="testifier" rolecode="wit"/>
+        </term>
+        <term roletext="wood engraver" rolecode="wde" uri="http://id.loc.gov/vocabulary/relators/wde"/>
+        <term roletext="woodcutter" rolecode="wdc" uri="http://id.loc.gov/vocabulary/relators/wdc"/>
+        <term roletext="writer of accompanying material" rolecode="wam" uri="http://id.loc.gov/vocabulary/relators/wam"/>
+        <term roletext="writer of added commentary" rolecode="wac" uri="http://id.loc.gov/vocabulary/relators/wac"/>
+        <term roletext="writer of added text" rolecode="wat" uri="http://id.loc.gov/vocabulary/relators/wat"/>
+        <term roletext="writer of added lyrics" rolecode="wal" uri="http://id.loc.gov/vocabulary/relators/wal"/>
+        <term roletext="writer of supplementary textual content" rolecode="wst" uri="http://id.loc.gov/vocabulary/relators/wst"/>
+        <term roletext="writer of introduction" rolecode="win" uri="http://id.loc.gov/vocabulary/relators/win"/>
+        <term roletext="writer of preface" rolecode="wpr" uri="http://id.loc.gov/vocabulary/relators/wpr"/>
+        <term roletext="collaborator" rolecode="ctb" uri="http://id.loc.gov/vocabulary/relators/ctb" deprecated="yes"/>
+        <term roletext="graphic technician" rolecode="art" uri="http://id.loc.gov/vocabulary/relators/art" deprecated="yes"/>
+        <term roletext="vocalist" rolecode="sng" uri="http://id.loc.gov/vocabulary/relators/sng" deprecated="yes"/>
 </relators>
 );
 (:
@@ -937,7 +937,7 @@ declare variable $marc2bfutils:lang-xwalk:=
    </language>
    <language language-name="German" iso6391="de" xmllang="de">
       <iso6392>ger</iso6392>
-      <iso6392>deu</iso6392>      
+      <iso6392>deu</iso6392>
    </language>
    <language language-name="Dogrib" iso6391="" xmllang="dgr">
       <iso6392>dgr</iso6392>
@@ -1037,7 +1037,7 @@ declare variable $marc2bfutils:lang-xwalk:=
    </language>
    <language language-name="French" iso6391="fr" xmllang="fr">
       <iso6392>fre</iso6392>
-      <iso6392>fra</iso6392>      
+      <iso6392>fra</iso6392>
    </language>
    <language language-name="French, Middle (ca.1400-1600)" iso6391="" xmllang="frm">
       <iso6392>frm</iso6392>
@@ -1074,7 +1074,7 @@ declare variable $marc2bfutils:lang-xwalk:=
    </language>
    <language language-name="Georgian" iso6391="ka" xmllang="ka">
       <iso6392>geo</iso6392>
-      <iso6392>kat</iso6392>      
+      <iso6392>kat</iso6392>
    </language>
    <language language-name="Geez" iso6391="" xmllang="gez">
       <iso6392>gez</iso6392>
@@ -2088,557 +2088,557 @@ declare variable $marc2bfutils:lang-xwalk:=
 </xml-langs>
 );
 declare variable $marc2bfutils:carriers := (
-	<terms>
-		<!-- Audio Carriers -->
-		<term code="sg">
-			<aL>audio cartridge</aL>
-			<scopeNote>MARC 007/01: g (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="se">
-			<aL>audio cylinder</aL>
-			<scopeNote>MARC 007/01: e (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="sd">
-			<aL>audio disc</aL>
-			<scopeNote>MARC 007/01: d (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="si">
-			<aL>sound track reel</aL>
-			<scopeNote>MARC 007/01: i (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="sq">
-			<aL>audio roll</aL>
-			<scopeNote>MARC 007/01: q (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ss">
-			<aL>audiocassette</aL>
-			<scopeNote>MARC 007/01: s (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="st">
-			<aL>audiotape reel</aL>
-			<scopeNote>MARC 007/01: t (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="sz">
-			<aL>other audio Carrier</aL>
-			<scopeNote>MARC 007/01: z (Sound recording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>AudioCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Computer carriers -->
-		<term code="ck">
-			<aL>computer card</aL>
-			<scopeNote>MARC 007/01: k (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cb">
-			<aL>computer chip cartridge</aL>
-			<scopeNote>MARC 007/01: b (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cd">
-			<aL>computer disc</aL>
-			<scopeNote>MARC 007/01: d (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ce">
-			<aL>computer disc cartridge</aL>
-			<scopeNote>MARC 007/01: e (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ca">
-			<aL>computer tape cartridge</aL>
-			<scopeNote>MARC 007/01: a (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cf">
-			<aL>computer tape cassette</aL>
-			<scopeNote>MARC 007/01: f (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ch">
-			<aL>computer tape reel</aL>
-			<scopeNote>MARC 007/01: h (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cr">
-			<aL>online resource</aL>
-			<scopeNote>MARC 007/01: r (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cz">
-			<aL>other computer carrier</aL>
-			<scopeNote>MARC 007/01: z (Electronic resource)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ComputerCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Microform carriers -->
-		<term code="ha">
-			<aL>aperture card</aL>
-			<scopeNote>MARC 007/01: a (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="he">
-			<aL>microfiche</aL>
-			<scopeNote>MARC 007/01: e (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hf">
-			<aL>microfiche cassette</aL>
-			<scopeNote>MARC 007/01: f (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf></memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hb">
-			<aL>microfilm cartridge</aL>
-			<scopeNote>MARC 007/01: b (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hc">
-			<aL>microfilm cassette</aL>
-			<scopeNote>MARC 007/01: c (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hd">
-			<aL>microfilm reel</aL>
-			<scopeNote>MARC 007/01: d (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hj">
-			<aL>microfilm roll</aL>
-			<scopeNote>MARC 007/01: j (Microfilm)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hh">
-			<aL>microfilm slip</aL>
-			<scopeNote>MARC 007/01: h (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hg">
-			<aL>microopaque</aL>
-			<scopeNote>MARC 007/01: g (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="hz">
-			<aL>other microform carrier</aL>
-			<scopeNote>MARC 007/01: z (Microform)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroformCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Microscopic carriers -->
-		<term code="pp">
-			<aL>microscope slide</aL>
-			<scopeNote>MARC 008/33: p (Visual Materials)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroscopicCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="pz">
-			<aL>other microscopic carrier</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>MicroscopicCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Projected image carriers -->
-		<term code="mc">
-			<aL>film cartridge</aL>
-			<scopeNote>MARC 007/01: c (Motion picture)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="mf">
-			<aL>film cassette</aL>
-			<scopeNote>MARC 007/01: f (Motion picture)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="mr">
-			<aL>film reel</aL>
-			<scopeNote>MARC 007/01: r (Motion picture)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="mo">
-			<aL>film roll</aL>
-			<scopeNote>MARC 007/01: o (Motion picture)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="gd">
-			<aL>filmslip</aL>
-			<scopeNote>MARC 007/01: d (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="gf">
-			<aL>filmstrip</aL>
-			<scopeNote>MARC 007/01: f (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="gc">
-			<aL>filmstrip cartridge</aL>
-			<scopeNote>MARC 007/01: c (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="gt">
-			<aL>overhead transparency</aL>
-			<scopeNote>MARC 007/01: t (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="gs">
-			<aL>slide</aL>
-			<scopeNote>MARC 007/01: s (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="mz">
-			<aL>other projected-image carrier</aL>
-			<scopeNote>MARC 007/01: z (Motion picture)</scopeNote>
-			<scopeNote>MARC 007/01: z (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>ProjectedImageCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Stereographic carriers -->
-		<term code="eh">
-			<aL>stereograph card</aL>
-			<scopeNote>MARC 007/01: h (Non-projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>StereographicCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="es">
-			<aL>stereograph disc</aL>
-			<scopeNote>MARC 007/01: s (Projected graphic)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>StereographicCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ez">
-			<aL>other stereographic Carrier</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>StereographicCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Unmediated carriers -->
-		<term code="no">
-			<aL>card</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="nn">
-			<aL>flipchart</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="na">
-			<aL>roll</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="nb">
-			<aL>sheet</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="nc">
-			<aL>volume</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="nr">
-			<aL>object</aL>
-			<scopeNote>MARC Bibliographic Leader/06: r</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="nz">
-			<aL>other unmediated carrier</aL>
-			<scopeNote>MARC 007/01: no code</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnmediatedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Video carriers -->
-		<term code="vc">
-			<aL>video cartridge</aL>
-			<scopeNote>MARC 007/01: c (Videorecording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>VideoCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="vf">
-			<aL>videocassette</aL>
-			<scopeNote>MARC 007/01: f (Videorecording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>VideoCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="vd">
-			<aL>videodisc</aL>
-			<scopeNote>MARC 007/01: d (Videorecording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>VideoCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="vr">
-			<aL>videotape reel</aL>
-			<scopeNote>MARC 007/01: r (Videorecording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>VideoCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="vz">
-			<aL>other video carrier</aL>
-			<scopeNote>MARC 007/01: z (Videorecording)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>VideoCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<!-- Unspecified carriers -->
-		<term code="zu">
-			<aL>unspecified</aL>
-			<scopeNote>MARC 007/01: u (Unspecified)</scopeNote>
-			<memberOf>RDACarriers</memberOf>
-			<memberOf>UnspecifiedCarriers</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-	</terms>
-	);
+        <terms>
+                <!-- Audio Carriers -->
+                <term code="sg">
+                        <aL>audio cartridge</aL>
+                        <scopeNote>MARC 007/01: g (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="se">
+                        <aL>audio cylinder</aL>
+                        <scopeNote>MARC 007/01: e (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="sd">
+                        <aL>audio disc</aL>
+                        <scopeNote>MARC 007/01: d (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="si">
+                        <aL>sound track reel</aL>
+                        <scopeNote>MARC 007/01: i (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="sq">
+                        <aL>audio roll</aL>
+                        <scopeNote>MARC 007/01: q (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ss">
+                        <aL>audiocassette</aL>
+                        <scopeNote>MARC 007/01: s (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="st">
+                        <aL>audiotape reel</aL>
+                        <scopeNote>MARC 007/01: t (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="sz">
+                        <aL>other audio Carrier</aL>
+                        <scopeNote>MARC 007/01: z (Sound recording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>AudioCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Computer carriers -->
+                <term code="ck">
+                        <aL>computer card</aL>
+                        <scopeNote>MARC 007/01: k (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cb">
+                        <aL>computer chip cartridge</aL>
+                        <scopeNote>MARC 007/01: b (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cd">
+                        <aL>computer disc</aL>
+                        <scopeNote>MARC 007/01: d (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ce">
+                        <aL>computer disc cartridge</aL>
+                        <scopeNote>MARC 007/01: e (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ca">
+                        <aL>computer tape cartridge</aL>
+                        <scopeNote>MARC 007/01: a (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cf">
+                        <aL>computer tape cassette</aL>
+                        <scopeNote>MARC 007/01: f (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ch">
+                        <aL>computer tape reel</aL>
+                        <scopeNote>MARC 007/01: h (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cr">
+                        <aL>online resource</aL>
+                        <scopeNote>MARC 007/01: r (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cz">
+                        <aL>other computer carrier</aL>
+                        <scopeNote>MARC 007/01: z (Electronic resource)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ComputerCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Microform carriers -->
+                <term code="ha">
+                        <aL>aperture card</aL>
+                        <scopeNote>MARC 007/01: a (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="he">
+                        <aL>microfiche</aL>
+                        <scopeNote>MARC 007/01: e (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hf">
+                        <aL>microfiche cassette</aL>
+                        <scopeNote>MARC 007/01: f (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf></memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hb">
+                        <aL>microfilm cartridge</aL>
+                        <scopeNote>MARC 007/01: b (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hc">
+                        <aL>microfilm cassette</aL>
+                        <scopeNote>MARC 007/01: c (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hd">
+                        <aL>microfilm reel</aL>
+                        <scopeNote>MARC 007/01: d (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hj">
+                        <aL>microfilm roll</aL>
+                        <scopeNote>MARC 007/01: j (Microfilm)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hh">
+                        <aL>microfilm slip</aL>
+                        <scopeNote>MARC 007/01: h (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hg">
+                        <aL>microopaque</aL>
+                        <scopeNote>MARC 007/01: g (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="hz">
+                        <aL>other microform carrier</aL>
+                        <scopeNote>MARC 007/01: z (Microform)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroformCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Microscopic carriers -->
+                <term code="pp">
+                        <aL>microscope slide</aL>
+                        <scopeNote>MARC 008/33: p (Visual Materials)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroscopicCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="pz">
+                        <aL>other microscopic carrier</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>MicroscopicCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Projected image carriers -->
+                <term code="mc">
+                        <aL>film cartridge</aL>
+                        <scopeNote>MARC 007/01: c (Motion picture)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="mf">
+                        <aL>film cassette</aL>
+                        <scopeNote>MARC 007/01: f (Motion picture)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="mr">
+                        <aL>film reel</aL>
+                        <scopeNote>MARC 007/01: r (Motion picture)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="mo">
+                        <aL>film roll</aL>
+                        <scopeNote>MARC 007/01: o (Motion picture)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="gd">
+                        <aL>filmslip</aL>
+                        <scopeNote>MARC 007/01: d (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="gf">
+                        <aL>filmstrip</aL>
+                        <scopeNote>MARC 007/01: f (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="gc">
+                        <aL>filmstrip cartridge</aL>
+                        <scopeNote>MARC 007/01: c (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="gt">
+                        <aL>overhead transparency</aL>
+                        <scopeNote>MARC 007/01: t (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="gs">
+                        <aL>slide</aL>
+                        <scopeNote>MARC 007/01: s (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="mz">
+                        <aL>other projected-image carrier</aL>
+                        <scopeNote>MARC 007/01: z (Motion picture)</scopeNote>
+                        <scopeNote>MARC 007/01: z (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>ProjectedImageCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Stereographic carriers -->
+                <term code="eh">
+                        <aL>stereograph card</aL>
+                        <scopeNote>MARC 007/01: h (Non-projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>StereographicCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="es">
+                        <aL>stereograph disc</aL>
+                        <scopeNote>MARC 007/01: s (Projected graphic)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>StereographicCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ez">
+                        <aL>other stereographic Carrier</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>StereographicCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Unmediated carriers -->
+                <term code="no">
+                        <aL>card</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="nn">
+                        <aL>flipchart</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="na">
+                        <aL>roll</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="nb">
+                        <aL>sheet</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="nc">
+                        <aL>volume</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="nr">
+                        <aL>object</aL>
+                        <scopeNote>MARC Bibliographic Leader/06: r</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="nz">
+                        <aL>other unmediated carrier</aL>
+                        <scopeNote>MARC 007/01: no code</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnmediatedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Video carriers -->
+                <term code="vc">
+                        <aL>video cartridge</aL>
+                        <scopeNote>MARC 007/01: c (Videorecording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>VideoCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="vf">
+                        <aL>videocassette</aL>
+                        <scopeNote>MARC 007/01: f (Videorecording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>VideoCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="vd">
+                        <aL>videodisc</aL>
+                        <scopeNote>MARC 007/01: d (Videorecording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>VideoCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="vr">
+                        <aL>videotape reel</aL>
+                        <scopeNote>MARC 007/01: r (Videorecording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>VideoCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="vz">
+                        <aL>other video carrier</aL>
+                        <scopeNote>MARC 007/01: z (Videorecording)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>VideoCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <!-- Unspecified carriers -->
+                <term code="zu">
+                        <aL>unspecified</aL>
+                        <scopeNote>MARC 007/01: u (Unspecified)</scopeNote>
+                        <memberOf>RDACarriers</memberOf>
+                        <memberOf>UnspecifiedCarriers</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+        </terms>
+        );
 declare variable $marc2bfutils:content-types := (
-	<terms>
-		<term code="crd">
-			<aL>cartographic dataset</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cri">
-			<aL>cartographic image</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="crm">
-			<aL>cartographic moving image</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="crt">
-			<aL>cartographic tactile image</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="crn">
-			<aL>cartographic tactile three-dimensional form</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="crf">
-			<aL>cartographic three-dimensional form</aL>
-			<scopeNote>MARC Leader/06: e or f</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cod">
-			<aL>computer dataset</aL>
-			<scopeNote>MARC Leader/06: m</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="cop">
-			<aL>computer program</aL>
-			<scopeNote>MARC Leader/06: m</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ntv">
-			<aL>notated movement</aL>
-			<scopeNote>MARC Leader/06: a or t</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="ntm">
-			<aL>notated music</aL>
-			<scopeNote>MARC Leader/06: c or d</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="prm">
-			<aL>performed music</aL>
-			<scopeNote>MARC Leader/06: j</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="snd">
-			<aL>sounds</aL>
-			<scopeNote>MARC Leader/06: i</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="spw">
-			<aL>spoken word</aL>
-			<scopeNote>MARC Leader/06: i</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="sti">
-			<aL>still image</aL>
-			<scopeNote>MARC Leader/06: k</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tci">
-			<aL>tactile image</aL>
-			<scopeNote>MARC Leader/06: k</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tcm">
-			<aL>tactile notated music</aL>
-			<scopeNote>MARC Leader/06: c or d</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tcn">
-			<aL>tactile notated movement</aL>
-			<scopeNote>MARC Leader/06: a or t</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tct">
-			<aL>tactile text</aL>
-			<scopeNote>MARC Leader/06: a or t</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tcf">
-			<aL>tactile three-dimensional form</aL>
-			<scopeNote>MARC Leader/06: r</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="txt">
-			<aL>text</aL>
-			<scopeNote>MARC Leader/06: a or t</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tdf">
-			<aL>three-dimensional form</aL>
-			<scopeNote>MARC Leader/06: r</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tdm">
-			<aL>three-dimensional moving image</aL>
-			<scopeNote>MARC Leader/06: g</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="tdi">
-			<aL>two-dimensional moving image</aL>
-			<scopeNote>MARC Leader/06: g</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="xxx">
-			<aL>other</aL>
-			<scopeNote>MARC Leader/06: o or p</scopeNote>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-		<term code="zzz">
-			<aL>unspecified</aL>
-			<memberOf>RDAContentTypes</memberOf>
-			<subClassOf></subClassOf>
-		</term>
-	</terms>);
-declare variable $marc2bfutils:media-types := ( 
+        <terms>
+                <term code="crd">
+                        <aL>cartographic dataset</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cri">
+                        <aL>cartographic image</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="crm">
+                        <aL>cartographic moving image</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="crt">
+                        <aL>cartographic tactile image</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="crn">
+                        <aL>cartographic tactile three-dimensional form</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="crf">
+                        <aL>cartographic three-dimensional form</aL>
+                        <scopeNote>MARC Leader/06: e or f</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cod">
+                        <aL>computer dataset</aL>
+                        <scopeNote>MARC Leader/06: m</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="cop">
+                        <aL>computer program</aL>
+                        <scopeNote>MARC Leader/06: m</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ntv">
+                        <aL>notated movement</aL>
+                        <scopeNote>MARC Leader/06: a or t</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="ntm">
+                        <aL>notated music</aL>
+                        <scopeNote>MARC Leader/06: c or d</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="prm">
+                        <aL>performed music</aL>
+                        <scopeNote>MARC Leader/06: j</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="snd">
+                        <aL>sounds</aL>
+                        <scopeNote>MARC Leader/06: i</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="spw">
+                        <aL>spoken word</aL>
+                        <scopeNote>MARC Leader/06: i</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="sti">
+                        <aL>still image</aL>
+                        <scopeNote>MARC Leader/06: k</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tci">
+                        <aL>tactile image</aL>
+                        <scopeNote>MARC Leader/06: k</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tcm">
+                        <aL>tactile notated music</aL>
+                        <scopeNote>MARC Leader/06: c or d</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tcn">
+                        <aL>tactile notated movement</aL>
+                        <scopeNote>MARC Leader/06: a or t</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tct">
+                        <aL>tactile text</aL>
+                        <scopeNote>MARC Leader/06: a or t</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tcf">
+                        <aL>tactile three-dimensional form</aL>
+                        <scopeNote>MARC Leader/06: r</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="txt">
+                        <aL>text</aL>
+                        <scopeNote>MARC Leader/06: a or t</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tdf">
+                        <aL>three-dimensional form</aL>
+                        <scopeNote>MARC Leader/06: r</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tdm">
+                        <aL>three-dimensional moving image</aL>
+                        <scopeNote>MARC Leader/06: g</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="tdi">
+                        <aL>two-dimensional moving image</aL>
+                        <scopeNote>MARC Leader/06: g</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="xxx">
+                        <aL>other</aL>
+                        <scopeNote>MARC Leader/06: o or p</scopeNote>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+                <term code="zzz">
+                        <aL>unspecified</aL>
+                        <memberOf>RDAContentTypes</memberOf>
+                        <subClassOf></subClassOf>
+                </term>
+        </terms>);
+declare variable $marc2bfutils:media-types := (
     <terms>
         <!-- RDA media types -->
         <!-- http://www.loc.gov/standards/valuelist/rdamedia.html  -->
@@ -2720,13 +2720,13 @@ declare variable $marc2bfutils:media-types := (
             <memberOf>RDAMediaTypes</memberOf>
             <subClassOf></subClassOf>
         </term>
-        
+
     </terms>);
 
 (:~
-:   This function takes a string and 
-:   attempts to clean it up 
-:   ISBD punctuation. based on 260 cleaning 
+:   This function takes a string and
+:   attempts to clean it up
+:   ISBD punctuation. based on 260 cleaning
 :
 :   @param  $s        is fn:string
 :   @return fn:string
@@ -2734,34 +2734,34 @@ declare variable $marc2bfutils:media-types := (
 declare function marc2bfutils:clean-string(
     $s as xs:string?
     ) as xs:string
-{ 
-	if (fn:exists($s)) then
-	    let $s:= fn:replace($s,"from old catalog","","i")
-	    (:nate removed ; from this one. not sure why we should remove ; from teh middle of a field. Consider Choppunctuation if it's needed?:) 
-	    let $s := fn:replace($s, "([\[\]]+)", "")
-	    (:nate removed : from this one. not sure why we should remove ; from the middle of a field. Consider Choppunctuation if it's needed?:)
-	    (:let $s := fn:replace($s, " :", ""):)
-	    let $s := fn:normalize-space($s)
-	    (:if it contains unbalanced parens, delete:)
-	    let $s:= if (fn:contains($s,"(") and fn:not(fn:contains($s, ")")) ) then
-	     		fn:replace($s, "\(", "")
-	    	else if (fn:contains($s,")") and fn:not(fn:contains($s, "(")) ) then
-	    		fn:replace($s, "\)", "")	    	
-	    	else $s
-	    
-	    return 
-	        if ( fn:ends-with($s, ",") ) then
-	            fn:substring($s, 1, (fn:string-length($s) - 1) )
-	        else  if ( fn:ends-with($s, "/") ) then
-	            fn:substring($s, 1, (fn:string-length($s) - 1) )
-	        else
-	            $s
-	
-	else ""
+{
+        if (fn:exists($s)) then
+            let $s:= fn:replace($s,"from old catalog","","i")
+            (:nate removed ; from this one. not sure why we should remove ; from teh middle of a field. Consider Choppunctuation if it's needed?:)
+            let $s := fn:replace($s, "([\[\]]+)", "")
+            (:nate removed : from this one. not sure why we should remove ; from the middle of a field. Consider Choppunctuation if it's needed?:)
+            (:let $s := fn:replace($s, " :", ""):)
+            let $s := fn:normalize-space($s)
+            (:if it contains unbalanced parens, delete:)
+            let $s:= if (fn:contains($s,"(") and fn:not(fn:contains($s, ")")) ) then
+                        fn:replace($s, "\(", "")
+                else if (fn:contains($s,")") and fn:not(fn:contains($s, "(")) ) then
+                        fn:replace($s, "\)", "")
+                else $s
+
+            return
+                if ( fn:ends-with($s, ",") ) then
+                    fn:substring($s, 1, (fn:string-length($s) - 1) )
+                else  if ( fn:ends-with($s, "/") ) then
+                    fn:substring($s, 1, (fn:string-length($s) - 1) )
+                else
+                    $s
+
+        else ""
 };
 
 (:~
-:   This function takes a name string and 
+:   This function takes a name string and
 :   attempts to clean it up (trailing commas only first).
 :
 :   @param  $s        is fn:string
@@ -2770,20 +2770,20 @@ declare function marc2bfutils:clean-string(
 declare function marc2bfutils:clean-name-string(
     $s as xs:string?
     ) as xs:string
-{ 
-	if (fn:exists($s)) then
-	    let $s:= fn:replace($s,",$","","i")
-	    let $s:= fn:replace($s,"\[from old catalog\]","","i")
-	    return 	    
-	            $s
-	
-	else ""
+{
+        if (fn:exists($s)) then
+            let $s:= fn:replace($s,",$","","i")
+            let $s:= fn:replace($s,"\[from old catalog\]","","i")
+            return
+                    $s
+
+        else ""
 
 };
 (:~
-:   This function takes a string and 
-:   attempts to clean it up 
-:   ISBD punctuation. based on title cleaning: you dont' want to strip out ";" 
+:   This function takes a string and
+:   attempts to clean it up
+:   ISBD punctuation. based on title cleaning: you dont' want to strip out ";"
 :
 :   @param  $s        is fn:string
 :   @return fn:string
@@ -2792,20 +2792,20 @@ declare function marc2bfutils:clean-title-string(
     $s as xs:string
     ) as xs:string
 {
-	let $s:= fn:replace($s,"from old catalog","","i")
-	let $s:= fn:replace($s,"\[sound recording\]","","i")
-	let $s:= fn:replace($s,"\[microform\]","","i")
-	
+        let $s:= fn:replace($s,"from old catalog","","i")
+        let $s:= fn:replace($s,"\[sound recording\]","","i")
+        let $s:= fn:replace($s,"\[microform\]","","i")
+
     let $s := fn:replace($s, "([\[\]]+)", "")
     let $s := fn:replace($s, " :", "")
-     
+
     let $s := fn:normalize-space($s)
-    let $s := 
+    let $s :=
         if ( fn:ends-with($s, ",") ) then
             fn:substring($s, 1, (fn:string-length($s) - 1) )
         else
             $s
-            let $s := 
+            let $s :=
         if ( fn:ends-with($s, "/") ) then
             fn:substring($s, 1, (fn:string-length($s) - 1) )
         else
@@ -2824,273 +2824,273 @@ declare function marc2bfutils:clean-title-string(
 :)
 declare function marc2bfutils:generate-controlfields(
     $r as element(marcxml:record)
-    ) 
+    )
 {
-		let $leader:=$r/marcxml:leader
-		let $leader6:=fn:substring($leader,7,1)
-		let $leader7:=fn:substring($leader,8,1)
-		let $leader19:=fn:substring($leader,20,1)
-		
-		let $cf008 :=fn:string($r/marcxml:controlfield[@tag="008"])
-		let $leader67type:=
-			if ($leader6="a") then
-					if (fn:matches($leader7,"(a|c|d|m)")) then
-						"BK"
-					else if (fn:matches($leader7,"(b|i|s)")) then
-						"SE"
-					else ()					
-					
-			else
-				if ($leader6="t") then "BK" 
-				else if ($leader6="p") then "MM"
-				else if ($leader6="m") then "CF"
-				else if (fn:matches($leader6,"(e|f|s)")) then "MP"
-				else if (fn:matches($leader6,"(g|k|o|r)")) then "VM"
-				else if (fn:matches($leader6,"(c|d|i|j)")) then "MU"
-				else ()
-				
-			let $modscollection:=if ($leader7="c") then "yes" else ()
-			let $modsmanuscript:= if (fn:matches($leader6,"(d|f|p|t)")) then "yes" else ()
-			let $modstypeOfResource:=						
-				if  ($leader6="a" or $leader6="t") then "text" 
-				else if ($leader6="e" or $leader6="f") then "cartographic"
-				else if  ($leader6="c" or $leader6="d") then "notated music"
-				else if  ($leader6="i" ) then "sound recording-nonmusical"
-				else if  ($leader6="j") then "sound recording-musical"
-				else if  ($leader6="k") then "still image"
-				else if  ($leader6="g") then "moving image"
-				else if  ($leader6="r") then "three dimensional object"
-				else if  ($leader6="m") then "software, multimedia"
-				else if  ($leader6="p") then "mixed material"
-				else ()
-		let $genre008:= 
-			if (fn:substring($cf008,26,1)="d") then "globe" else ()
-		let $genre007:=  if	($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)="ar"]) then "remote-sensing image" else ()
-		let $genreMP:=
-		 	if ($leader67type="MP") then
-		 		if  (fn:matches(fn:substring($cf008,26,1),"(a|b|c)") or  $r/marcxml:controlfield[@tag=007][fn:substring(text(),1,2)="aj"]) then "map" 
-				else if ($leader67type="MP" and fn:matches(fn:substring($cf008,26,1),"e") or  $r/marcxml:controlfield[@tag=007][fn:substring(text(),1,2)="ad"]) then "atlas" 
-				else ()
-			else ()
-		let $genreSE:=  
-			if ($leader67type="SE") then 		
-				let$cf008-21 :=fn:substring($cf008,22,1)
-				return 			
-					if  ($cf008-21="d") then "database"				
-						else if  ($cf008-21="l") then "loose-leaf"			
-						else if  ($cf008-21="m") then "series"				
-						else if ($cf008-21="n") then "newspaper"
-						else if ($cf008-21="p") then "periodical"
-						else if  ($cf008-21="w") then "web site"
-						else ()
-			else ()
-			
-		let $genreBKSE:=
-			if ($leader67type="BK" or $leader67type="SE") then 
-				let$cf008-24:= fn:substring($cf008,25,4)
-				return
-					if (fn:contains($cf008-24,'a')) then "abstract or summary"
-					else if (fn:contains($cf008-24,'b')) then "bibliography"
-					else if (fn:contains($cf008-24,'c')) then "catalog"
-					else if (fn:contains($cf008-24,'d')) then "dictionary"
-					else if (fn:contains($cf008-24,'e')) then "encyclopedia"
-					else if (fn:contains($cf008-24,'f')) then "handbook"
-					else if (fn:contains($cf008-24,'g')) then "legal article"
-					else if (fn:contains($cf008-24,'i')) then "index"
-					else if (fn:contains($cf008-24,'k')) then "discography"
-					else if (fn:contains($cf008-24,'l')) then "legislation"
-					else if (fn:contains($cf008-24,'m')) then "theses"
-					else if (fn:contains($cf008-24,'n')) then "survey of literature"
-					else if (fn:contains($cf008-24,'o')) then "review"
-					else if (fn:contains($cf008-24,'p')) then "programmed text"
-					else if (fn:contains($cf008-24,'q')) then "filmography"
-					else if (fn:contains($cf008-24,'r')) then "directory"
-					else if (fn:contains($cf008-24,'s')) then "statistics"
-					else if (fn:contains($cf008-24,'t')) then "technical report"
-					else if (fn:contains($cf008-24,'v')) then "legal case and case notes"
-					else if (fn:contains($cf008-24,'w')) then "law report or digest"
-					else if (fn:contains($cf008-24,'z')) then "treaty"
-					else if (fn:substring($cf008,30,1)="1") then "conference publication"
-					else ()
-				else ()	
-			
-	let $genreCF:=
-		if ($leader67type="CF") then 
-			if (fn:substring($cf008,27,1)="a") then "numeric data"
-			else if (fn:substring($cf008,27,1)="e") then "database"
-			else if (fn:substring($cf008,27,1)="f") then "font"
-			else if (fn:substring($cf008,27,1)="g") then "game"
-			else ()
-		else ()
-			
-	let $genreBK:=
-		if ($leader67type="BK") then 
-			if (fn:substring($cf008,25,1)="j") then "patent"
-			else if (fn:substring($cf008,25,1)="2") then "offprint"
-			else if (fn:substring($cf008,31,1)="1") then "festschrift"
-			else if (fn:matches(fn:substring($cf008,35,1),"(a|b|c|d)")) then "biography"
-			else if (fn:substring($cf008,34,1)="e") then "essay"
-			else if (fn:substring($cf008,34,1)="d") then "drama"
-			else if (fn:substring($cf008,34,1)="c") then "comic strip"
-			else if (fn:substring($cf008,34,1)="l") then "fiction"
-			else if (fn:substring($cf008,34,1)="h") then "humor, satire"
-			else if (fn:substring($cf008,34,1)="i") then "letter"
-			else if (fn:substring($cf008,34,1)="f") then "novel"
-			else if (fn:substring($cf008,34,1)="j") then "short story"
-			else if (fn:substring($cf008,34,1)="s") then "speech"
-			else ()
-				
-		else ()
-	let $genreMU:=
-		if ($leader67type="MU") then 
-			let $cf008-30-31:=fn:substring($cf008,31,2)
-			return
-			if (fn:contains($cf008-30-31,'b')) then "biography"
-			else if (fn:contains($cf008-30-31,'c')) then "conference publication"
-			else if (fn:contains($cf008-30-31,'d')) then "drama"
-			else if (fn:contains($cf008-30-31,'e')) then "essay"
-			else if (fn:contains($cf008-30-31,'f')) then "fiction"
-			else if (fn:contains($cf008-30-31,'o')) then "folktale"
-			else if (fn:contains($cf008-30-31,'h')) then "history"
-			else if (fn:contains($cf008-30-31,'k')) then "humor, satire"
-			else if (fn:contains($cf008-30-31,'m')) then "memoir"
-			else if (fn:contains($cf008-30-31,'p')) then "poetry"
-			else if (fn:contains($cf008-30-31,'r')) then "rehearsal"
-			else if (fn:contains($cf008-30-31,'g')) then "reporting"
-			else if (fn:contains($cf008-30-31,'s')) then "sound"
-			else if (fn:contains($cf008-30-31,'l')) then "speech"
-			else ()
-		else ()
-		let $genreVM:=
-		if ($leader67type="VM") then 
-			let $cf008-33 :=fn:substring($cf008,34,1)
-			return 
-				if($cf008-33="a") then "art original"
-				else if ($cf008-33="b") then "kit"
-				else if ($cf008-33="c") then "art reproduction"
-				else if ($cf008-33="d") then "diorama"
-				else if ($cf008-33="f") then "filmstrip"
-				else if ($cf008-33="g") then "legal article"
-				else if ($cf008-33="i") then "picture"
-				else if ($cf008-33="k") then "graphic"
-				else if ($cf008-33="l") then "technical drawing"
-				else if ($cf008-33="m") then "motion picture"
-				else if ($cf008-33="n") then "chart"
-				else if ($cf008-33="o") then "flash card"
-				else if ($cf008-33="p") then "microscope slide"						
-				else if ($cf008-33="q" or $r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)="aq"]) then "model"
-				else if ($cf008-33="r") then "realia"
-				else if ($cf008-33="s") then "slide"
-				else if ($cf008-33="t") then "transparency"
-				else if ($cf008-33="v") then "videorecording"
-				else if ($cf008-33="w") then "toy"
-				else ()
-			
-		else ()
-let $edited:=fn:concat(fn:substring(($r/marcxml:controlfield[@tag="005"]),1,4),"-",fn:substring(($r/marcxml:controlfield[@tag="005"]),5,2),"-",fn:substring(($r/marcxml:controlfield[@tag="005"]),7,2),"T",fn:substring(($r/marcxml:controlfield[@tag="005"]),9,2),":",fn:substring(($r/marcxml:controlfield[@tag="005"]),11,2)) 
+                let $leader:=$r/marcxml:leader
+                let $leader6:=fn:substring($leader,7,1)
+                let $leader7:=fn:substring($leader,8,1)
+                let $leader19:=fn:substring($leader,20,1)
+
+                let $cf008 :=fn:string($r/marcxml:controlfield[@tag="008"])
+                let $leader67type:=
+                        if ($leader6="a") then
+                                        if (fn:matches($leader7,"(a|c|d|m)")) then
+                                                "BK"
+                                        else if (fn:matches($leader7,"(b|i|s)")) then
+                                                "SE"
+                                        else ()
+
+                        else
+                                if ($leader6="t") then "BK"
+                                else if ($leader6="p") then "MM"
+                                else if ($leader6="m") then "CF"
+                                else if (fn:matches($leader6,"(e|f|s)")) then "MP"
+                                else if (fn:matches($leader6,"(g|k|o|r)")) then "VM"
+                                else if (fn:matches($leader6,"(c|d|i|j)")) then "MU"
+                                else ()
+
+                        let $modscollection:=if ($leader7="c") then "yes" else ()
+                        let $modsmanuscript:= if (fn:matches($leader6,"(d|f|p|t)")) then "yes" else ()
+                        let $modstypeOfResource:=
+                                if  ($leader6="a" or $leader6="t") then "text"
+                                else if ($leader6="e" or $leader6="f") then "cartographic"
+                                else if  ($leader6="c" or $leader6="d") then "notated music"
+                                else if  ($leader6="i" ) then "sound recording-nonmusical"
+                                else if  ($leader6="j") then "sound recording-musical"
+                                else if  ($leader6="k") then "still image"
+                                else if  ($leader6="g") then "moving image"
+                                else if  ($leader6="r") then "three dimensional object"
+                                else if  ($leader6="m") then "software, multimedia"
+                                else if  ($leader6="p") then "mixed material"
+                                else ()
+                let $genre008:=
+                        if (fn:substring($cf008,26,1)="d") then "globe" else ()
+                let $genre007:=  if     ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)="ar"]) then "remote-sensing image" else ()
+                let $genreMP:=
+                        if ($leader67type="MP") then
+                                if  (fn:matches(fn:substring($cf008,26,1),"(a|b|c)") or  $r/marcxml:controlfield[@tag=007][fn:substring(text(),1,2)="aj"]) then "map"
+                                else if ($leader67type="MP" and fn:matches(fn:substring($cf008,26,1),"e") or  $r/marcxml:controlfield[@tag=007][fn:substring(text(),1,2)="ad"]) then "atlas"
+                                else ()
+                        else ()
+                let $genreSE:=
+                        if ($leader67type="SE") then
+                                let$cf008-21 :=fn:substring($cf008,22,1)
+                                return
+                                        if  ($cf008-21="d") then "database"
+                                                else if  ($cf008-21="l") then "loose-leaf"
+                                                else if  ($cf008-21="m") then "series"
+                                                else if ($cf008-21="n") then "newspaper"
+                                                else if ($cf008-21="p") then "periodical"
+                                                else if  ($cf008-21="w") then "web site"
+                                                else ()
+                        else ()
+
+                let $genreBKSE:=
+                        if ($leader67type="BK" or $leader67type="SE") then
+                                let$cf008-24:= fn:substring($cf008,25,4)
+                                return
+                                        if (fn:contains($cf008-24,'a')) then "abstract or summary"
+                                        else if (fn:contains($cf008-24,'b')) then "bibliography"
+                                        else if (fn:contains($cf008-24,'c')) then "catalog"
+                                        else if (fn:contains($cf008-24,'d')) then "dictionary"
+                                        else if (fn:contains($cf008-24,'e')) then "encyclopedia"
+                                        else if (fn:contains($cf008-24,'f')) then "handbook"
+                                        else if (fn:contains($cf008-24,'g')) then "legal article"
+                                        else if (fn:contains($cf008-24,'i')) then "index"
+                                        else if (fn:contains($cf008-24,'k')) then "discography"
+                                        else if (fn:contains($cf008-24,'l')) then "legislation"
+                                        else if (fn:contains($cf008-24,'m')) then "theses"
+                                        else if (fn:contains($cf008-24,'n')) then "survey of literature"
+                                        else if (fn:contains($cf008-24,'o')) then "review"
+                                        else if (fn:contains($cf008-24,'p')) then "programmed text"
+                                        else if (fn:contains($cf008-24,'q')) then "filmography"
+                                        else if (fn:contains($cf008-24,'r')) then "directory"
+                                        else if (fn:contains($cf008-24,'s')) then "statistics"
+                                        else if (fn:contains($cf008-24,'t')) then "technical report"
+                                        else if (fn:contains($cf008-24,'v')) then "legal case and case notes"
+                                        else if (fn:contains($cf008-24,'w')) then "law report or digest"
+                                        else if (fn:contains($cf008-24,'z')) then "treaty"
+                                        else if (fn:substring($cf008,30,1)="1") then "conference publication"
+                                        else ()
+                                else ()
+
+        let $genreCF:=
+                if ($leader67type="CF") then
+                        if (fn:substring($cf008,27,1)="a") then "numeric data"
+                        else if (fn:substring($cf008,27,1)="e") then "database"
+                        else if (fn:substring($cf008,27,1)="f") then "font"
+                        else if (fn:substring($cf008,27,1)="g") then "game"
+                        else ()
+                else ()
+
+        let $genreBK:=
+                if ($leader67type="BK") then
+                        if (fn:substring($cf008,25,1)="j") then "patent"
+                        else if (fn:substring($cf008,25,1)="2") then "offprint"
+                        else if (fn:substring($cf008,31,1)="1") then "festschrift"
+                        else if (fn:matches(fn:substring($cf008,35,1),"(a|b|c|d)")) then "biography"
+                        else if (fn:substring($cf008,34,1)="e") then "essay"
+                        else if (fn:substring($cf008,34,1)="d") then "drama"
+                        else if (fn:substring($cf008,34,1)="c") then "comic strip"
+                        else if (fn:substring($cf008,34,1)="l") then "fiction"
+                        else if (fn:substring($cf008,34,1)="h") then "humor, satire"
+                        else if (fn:substring($cf008,34,1)="i") then "letter"
+                        else if (fn:substring($cf008,34,1)="f") then "novel"
+                        else if (fn:substring($cf008,34,1)="j") then "short story"
+                        else if (fn:substring($cf008,34,1)="s") then "speech"
+                        else ()
+
+                else ()
+        let $genreMU:=
+                if ($leader67type="MU") then
+                        let $cf008-30-31:=fn:substring($cf008,31,2)
+                        return
+                        if (fn:contains($cf008-30-31,'b')) then "biography"
+                        else if (fn:contains($cf008-30-31,'c')) then "conference publication"
+                        else if (fn:contains($cf008-30-31,'d')) then "drama"
+                        else if (fn:contains($cf008-30-31,'e')) then "essay"
+                        else if (fn:contains($cf008-30-31,'f')) then "fiction"
+                        else if (fn:contains($cf008-30-31,'o')) then "folktale"
+                        else if (fn:contains($cf008-30-31,'h')) then "history"
+                        else if (fn:contains($cf008-30-31,'k')) then "humor, satire"
+                        else if (fn:contains($cf008-30-31,'m')) then "memoir"
+                        else if (fn:contains($cf008-30-31,'p')) then "poetry"
+                        else if (fn:contains($cf008-30-31,'r')) then "rehearsal"
+                        else if (fn:contains($cf008-30-31,'g')) then "reporting"
+                        else if (fn:contains($cf008-30-31,'s')) then "sound"
+                        else if (fn:contains($cf008-30-31,'l')) then "speech"
+                        else ()
+                else ()
+                let $genreVM:=
+                if ($leader67type="VM") then
+                        let $cf008-33 :=fn:substring($cf008,34,1)
+                        return
+                                if($cf008-33="a") then "art original"
+                                else if ($cf008-33="b") then "kit"
+                                else if ($cf008-33="c") then "art reproduction"
+                                else if ($cf008-33="d") then "diorama"
+                                else if ($cf008-33="f") then "filmstrip"
+                                else if ($cf008-33="g") then "legal article"
+                                else if ($cf008-33="i") then "picture"
+                                else if ($cf008-33="k") then "graphic"
+                                else if ($cf008-33="l") then "technical drawing"
+                                else if ($cf008-33="m") then "motion picture"
+                                else if ($cf008-33="n") then "chart"
+                                else if ($cf008-33="o") then "flash card"
+                                else if ($cf008-33="p") then "microscope slide"
+                                else if ($cf008-33="q" or $r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)="aq"]) then "model"
+                                else if ($cf008-33="r") then "realia"
+                                else if ($cf008-33="s") then "slide"
+                                else if ($cf008-33="t") then "transparency"
+                                else if ($cf008-33="v") then "videorecording"
+                                else if ($cf008-33="w") then "toy"
+                                else ()
+
+                else ()
+let $edited:=fn:concat(fn:substring(($r/marcxml:controlfield[@tag="005"]),1,4),"-",fn:substring(($r/marcxml:controlfield[@tag="005"]),5,2),"-",fn:substring(($r/marcxml:controlfield[@tag="005"]),7,2),"T",fn:substring(($r/marcxml:controlfield[@tag="005"]),9,2),":",fn:substring(($r/marcxml:controlfield[@tag="005"]),11,2))
 (:let $date008:=:)
 let $cf008-7-10:=fn:normalize-space(fn:substring($cf008, 8, 4))
 let $cf008-11-14:=fn:normalize-space(fn:substring($cf008, 12, 4))
 let $cf008-6:=fn:normalize-space(fn:substring($cf008, 7, 1))
-let $datecreated008:= if (fn:matches($cf008-6,"(e|p|r|s|t)") and fn:matches($leader6,"(d|f|p|t)") and $cf008-7-10 ) then  					
-					$cf008-7-10 
-				else () 										
+let $datecreated008:= if (fn:matches($cf008-6,"(e|p|r|s|t)") and fn:matches($leader6,"(d|f|p|t)") and $cf008-7-10 ) then
+                                        $cf008-7-10
+                                else ()
 
-	let $dateissued008:=
-		if (fn:matches($cf008-6,"(e|p|r|s|t)") and fn:not(fn:matches($leader6,"(d|f|pt)")) and $cf008-7-10 ) then					
-					$cf008-7-10 
-		else ()
+        let $dateissued008:=
+                if (fn:matches($cf008-6,"(e|p|r|s|t)") and fn:not(fn:matches($leader6,"(d|f|pt)")) and $cf008-7-10 ) then
+                                        $cf008-7-10
+                else ()
 let $dateissued008start:=
-			if (fn:matches($cf008-6,"(c|d|i|k|m|u)") and 	$cf008-7-10) then 			
-						$cf008-7-10
-			else ()
-			
+                        if (fn:matches($cf008-6,"(c|d|i|k|m|u)") and    $cf008-7-10) then
+                                                $cf008-7-10
+                        else ()
+
 let $dateissued008end:=
-			if (fn:matches($cf008-6,"(c|d|i|k|m|u)") and 	$cf008-11-14) then 			
-						$cf008-11-14
-				else ()
-			
+                        if (fn:matches($cf008-6,"(c|d|i|k|m|u)") and    $cf008-11-14) then
+                                                $cf008-11-14
+                                else ()
+
 let $dateissued008start-q:=
-			if ($cf008-6="q" and $cf008-7-10) then					
-					$cf008-7-10					
-			else ()
+                        if ($cf008-6="q" and $cf008-7-10) then
+                                        $cf008-7-10
+                        else ()
 let $dateissued008end-q:=
-			if ($cf008-6="q" and $cf008-11-14) then					
-					$cf008-11-14			
-			else ()
-			
+                        if ($cf008-6="q" and $cf008-11-14) then
+                                        $cf008-11-14
+                        else ()
+
 let $datecopyright008 :=
-			if ($cf008-6="t" and  $cf008-11-14) then				
-					$cf008-11-14		
-			else ()
+                        if ($cf008-6="t" and  $cf008-11-14) then
+                                        $cf008-11-14
+                        else ()
 let $issuance:=
-	if (fn:matches($leader7,"(a|c|d|m)")) 				then "monographic"
-	else if ($leader7="b") 						then "continuing"
-	else if ($leader7="m" and  fn:matches($leader19,"(a|b|c)")) 	then "multipart monograph"
-	else if ($leader7='m' and $leader19='#') 				then "single unit"
-	else if ($leader7='i') 							then "integrating resource"
-	else if ($leader7='s') 						then "serial"
-	else ()
-				
+        if (fn:matches($leader7,"(a|c|d|m)"))                           then "monographic"
+        else if ($leader7="b")                                          then "continuing"
+        else if ($leader7="m" and  fn:matches($leader19,"(a|b|c)"))     then "multipart monograph"
+        else if ($leader7='m' and $leader19='#')                                then "single unit"
+        else if ($leader7='i')                                                  then "integrating resource"
+        else if ($leader7='s')                                          then "serial"
+        else ()
+
 let $frequency:=
-	if ($leader67type="SE") then
-		if (fn:substring($cf008,19,1)="a") 		     then	"Annual"						
-			else if (fn:substring($cf008,19,1)="b") then "Bimonthly"
-			else if (fn:substring($cf008,19,1)="c") then "Semiweekly"
-			else if (fn:substring($cf008,19,1)="d") then "Daily"
-			else if (fn:substring($cf008,19,1)="e") then "Biweekly"
-			else if (fn:substring($cf008,19,1)="f") then "Semiannual"
-			else if (fn:substring($cf008,19,1)="g") then "Biennial"
-			else if (fn:substring($cf008,19,1)="h") then "Triennial"
-			else if (fn:substring($cf008,19,1)="i") then "Three times a week"
-			else if (fn:substring($cf008,19,1)="j") then "Three times a month"
-			else if (fn:substring($cf008,19,1)="k") then "Continuously updated"
-			else if (fn:substring($cf008,19,1)="m") then "Monthly"
-			else if (fn:substring($cf008,19,1)="q") then "Quarterly"
-			else if (fn:substring($cf008,19,1)="s") then "Semimonthly"
-			else if (fn:substring($cf008,19,1)="t") then "Three times a year"
-			else if (fn:substring($cf008,19,1)="u") then "Unknown"
-			else if (fn:substring($cf008,19,1)="w") then "Weekly"
-			else if (fn:substring($cf008,19,1)="#") then "Completely irregular"
-			else ()
-					
-		else ()
+        if ($leader67type="SE") then
+                if (fn:substring($cf008,19,1)="a")                   then       "Annual"
+                        else if (fn:substring($cf008,19,1)="b") then "Bimonthly"
+                        else if (fn:substring($cf008,19,1)="c") then "Semiweekly"
+                        else if (fn:substring($cf008,19,1)="d") then "Daily"
+                        else if (fn:substring($cf008,19,1)="e") then "Biweekly"
+                        else if (fn:substring($cf008,19,1)="f") then "Semiannual"
+                        else if (fn:substring($cf008,19,1)="g") then "Biennial"
+                        else if (fn:substring($cf008,19,1)="h") then "Triennial"
+                        else if (fn:substring($cf008,19,1)="i") then "Three times a week"
+                        else if (fn:substring($cf008,19,1)="j") then "Three times a month"
+                        else if (fn:substring($cf008,19,1)="k") then "Continuously updated"
+                        else if (fn:substring($cf008,19,1)="m") then "Monthly"
+                        else if (fn:substring($cf008,19,1)="q") then "Quarterly"
+                        else if (fn:substring($cf008,19,1)="s") then "Semimonthly"
+                        else if (fn:substring($cf008,19,1)="t") then "Three times a year"
+                        else if (fn:substring($cf008,19,1)="u") then "Unknown"
+                        else if (fn:substring($cf008,19,1)="w") then "Weekly"
+                        else if (fn:substring($cf008,19,1)="#") then "Completely irregular"
+                        else ()
+
+                else ()
 
 let $lang008:=
-    if (fn:normalize-space(fn:replace(fn:substring($cf008,36,3),"\|#",''))!="") then		
+    if (fn:normalize-space(fn:replace(fn:substring($cf008,36,3),"\|#",''))!="") then
         fn:substring($cf008,36,3)
-    else ()		
+    else ()
 
-let $digorigin008:=	
+let $digorigin008:=
     if ($leader67type='CF' and $r/marcxml:controlfield[@tag=007][fn:substring(.,12,1)='a']) then "reformatted digital"
     else if ($leader67type='CF' and $r/marcxml:controlfield[@tag=007][fn:substring(.,12,1)='b']) then "digitized microfilm"
     else if ($leader67type='CF' and $r/marcxml:controlfield[@tag=007][fn:substring(.,12,1)='d']) then "digitized other analog"
     else ()
-		
+
 let $cf008-23 :=fn:substring($cf008,24,1)
 let $cf008-29:=fn:substring($cf008,30,1)
-let $check008-23:= 
-    if (fn:matches($leader67type,"(BK|MU|SE|MM)")) then 
+let $check008-23:=
+    if (fn:matches($leader67type,"(BK|MU|SE|MM)")) then
         fn:true()
     else ()
-let $check008-29:= 
-    if (fn:matches($leader67type,"(MP|VM)")) then 
-        fn:true()  	
+let $check008-29:=
+    if (fn:matches($leader67type,"(MP|VM)")) then
+        fn:true()
     else ()
 let $form008:=
-	if ( ($check008-23 and $cf008-23="f") or ($check008-29 and $cf008-29='f') ) then 			"braille"
-				else if (($cf008-23=" " and ($leader6="c" or $leader6="d")) or (($leader67type="BK" or $leader67type="SE") and ($cf008-23=" " or $cf008="r"))) then "print"
-				else if ($leader6 = 'm' or ($check008-23 and $cf008-23='s') or ($check008-29 and $cf008-29='s') or ($check008-29 and $cf008-29='q')) then "electronic"				
-				else if ($leader6 = "o") then "kit"
-				else if (($check008-23 and $cf008-23='b') or ($check008-29 and $cf008-29='b')) then "microfiche"
-				else if (($check008-23 and $cf008-23='a') or ($check008-29 and $cf008-29='a')) then "microfilm"
-				else ()
-let $reformatqual:=			
-		if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='ca']) then "access"
-			else if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='cp']) then "preservation" 
-			else if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='cr']) then "replacement"
-		else ()
-		
+        if ( ($check008-23 and $cf008-23="f") or ($check008-29 and $cf008-29='f') ) then                        "braille"
+                                else if (($cf008-23=" " and ($leader6="c" or $leader6="d")) or (($leader67type="BK" or $leader67type="SE") and ($cf008-23=" " or $cf008="r"))) then "print"
+                                else if ($leader6 = 'm' or ($check008-23 and $cf008-23='s') or ($check008-29 and $cf008-29='s') or ($check008-29 and $cf008-29='q')) then "electronic"
+                                else if ($leader6 = "o") then "kit"
+                                else if (($check008-23 and $cf008-23='b') or ($check008-29 and $cf008-29='b')) then "microfiche"
+                                else if (($check008-23 and $cf008-23='a') or ($check008-29 and $cf008-29='a')) then "microfilm"
+                                else ()
+let $reformatqual:=
+                if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='ca']) then "access"
+                        else if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='cp']) then "preservation"
+                        else if ($r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)='cr']) then "replacement"
+                else ()
+
 (: use this table: to simplify the ifs below: :)
 let $forms:=<set>
 <form c007-1-2="ad" marccat="map" marcsmd="atlas"/>
@@ -3167,87 +3167,87 @@ let $forms:=<set>
 </set>
 let $c007-1-2:=$r/marcxml:controlfield[@tag="007"][fn:substring(text(),1,2)]
 let $marccat:=
-	$forms//form[@c007-1-2=$c007-1-2]/@marccat
+        $forms//form[@c007-1-2=$c007-1-2]/@marccat
 let $marcsmd:=
-	$forms//form[@c007-1-2=$c007-1-2]/@smd
+        $forms//form[@c007-1-2=$c007-1-2]/@smd
 
-let $resourcetp:= 
+let $resourcetp:=
   if ($leader67type="BK") then "Monographic Text (Book)"
-	else if ($leader67type="SE") then "Serial"
-	else if ($leader67type="MM") then "Mixed Materials"
-	else if ($leader67type="CF") then "Computer File"
-	else if ($leader67type="MP") then "Cartographic"
-	else if ($leader67type="VM") then "Visual Materials"
-	else if ($leader67type="MU") then "Music"
-	else $leader67type
+        else if ($leader67type="SE") then "Serial"
+        else if ($leader67type="MM") then "Mixed Materials"
+        else if ($leader67type="CF") then "Computer File"
+        else if ($leader67type="MP") then "Cartographic"
+        else if ($leader67type="VM") then "Visual Materials"
+        else if ($leader67type="MU") then "Music"
+        else $leader67type
 
-		
-return 
-		element bf:MachineInfo {				
-			element bf:leader67type {$leader67type},
-			element bf:modsresourcetype {fn:concat($resourcetp,". not fully delineated yet")},
-			element bf:modscollection {$modscollection},
-			element bf:modsmanuscript {$modsmanuscript},					
-			element bf:modstypeOfResource {$modstypeOfResource},			
-			if ($genre007) then element bf:genre {$genre007} else (),
-			if ($genre008) then element bf:genre {$genre008} else (),
-			if ($genreMP) then element bf:genre {$genreMP} else (),
-			if ($genreBKSE) then element bf:genre {$genreBKSE} else (),
-			if ($genreCF) then element bf:genre {$genreCF} else (),
-			if ($genreBK) then element bf:genre {$genreBK} else (),
-			if ($genreMU) then element bf:genre {$genreMU} else (),
-			if ($genreVM) then element bf:genre {$genreVM} else (),						
-			element bf:datecreated{$datecreated008},
-			element bf:dateissued {$dateissued008},
-			element bf:dateissuedstart{$dateissued008start},
-			element bf:dateissuedend{$dateissued008end},
-			element bf:dateissuedstart-q{$dateissued008start},
-			element bf:dateissuedend-q{$dateissued008end},
-			element bf:datecopyright{$datecopyright008},
-			element bf:modeOfIssuance{$issuance},
-			element bf:frequency{$frequency},
-			element bf:language{$lang008},
-			element bf:digitalOrigin{$digorigin008},
-			element bf:form{$form008},
-			element bf:reformatqual{$reformatqual},			
-			element bf:form-category007{$marccat},
-			element bf:form-smd007{$marcsmd},
-			element bf:edited {$edited}				
-		}
-		
+
+return
+                element bf:MachineInfo {
+                        element bf:leader67type {$leader67type},
+                        element bf:modsresourcetype {fn:concat($resourcetp,". not fully delineated yet")},
+                        element bf:modscollection {$modscollection},
+                        element bf:modsmanuscript {$modsmanuscript},
+                        element bf:modstypeOfResource {$modstypeOfResource},
+                        if ($genre007) then element bf:genre {$genre007} else (),
+                        if ($genre008) then element bf:genre {$genre008} else (),
+                        if ($genreMP) then element bf:genre {$genreMP} else (),
+                        if ($genreBKSE) then element bf:genre {$genreBKSE} else (),
+                        if ($genreCF) then element bf:genre {$genreCF} else (),
+                        if ($genreBK) then element bf:genre {$genreBK} else (),
+                        if ($genreMU) then element bf:genre {$genreMU} else (),
+                        if ($genreVM) then element bf:genre {$genreVM} else (),
+                        element bf:datecreated{$datecreated008},
+                        element bf:dateissued {$dateissued008},
+                        element bf:dateissuedstart{$dateissued008start},
+                        element bf:dateissuedend{$dateissued008end},
+                        element bf:dateissuedstart-q{$dateissued008start},
+                        element bf:dateissuedend-q{$dateissued008end},
+                        element bf:datecopyright{$datecopyright008},
+                        element bf:modeOfIssuance{$issuance},
+                        element bf:frequency{$frequency},
+                        element bf:language{$lang008},
+                        element bf:digitalOrigin{$digorigin008},
+                        element bf:form{$form008},
+                        element bf:reformatqual{$reformatqual},
+                        element bf:form-category007{$marccat},
+                        element bf:form-smd007{$marcsmd},
+                        element bf:edited {$edited}
+                }
+
 };
 (: This function matches the carrier text to the varable containing the carrier code, returning the code for building a uri
 :)
 declare function marc2bfutils:generate-carrier-code($carrier-text as xs:string) as xs:string {
- fn:string( $marc2bfutils:carriers/term[aL=$carrier-text]/@code)			
+ fn:string( $marc2bfutils:carriers/term[aL=$carrier-text]/@code)
 };
 (: This function matches the content text to the varable containing the content code, returning the code for building a uri
 :)
 declare function marc2bfutils:generate-content-code($content-text as xs:string) as xs:string {
  fn:string( $marc2bfutils:content-types/term[aL=$content-text]/@code)
- 			
+
 };
 (: This function matches the mediatype text to the varable containing the mediatype code, returning the code for building a uri
 :)
 declare function marc2bfutils:generate-mediatype-code($media-text as xs:string) as xs:string {
  fn:string( $marc2bfutils:media-types/term[aL=$media-text]/@code)
- 
+
 };
 (: This function matches the carrier text to the varable containing the carrier code, returning the code for building a uri
 : now accounts for variants in term/var/@roletext, and matches on lowercase
 :)
 declare function marc2bfutils:generate-role-code($role-text as xs:string) as xs:string {
  let $role:= marc2bfutils:chopPunctuation(marc2bfutils:clean-string(fn:lower-case($role-text)),".")
- return fn:string( $marc2bfutils:role-xwalk//*[1][@roletext=$role]/@rolecode)			
+ return fn:string( $marc2bfutils:role-xwalk//*[1][@roletext=$role]/@rolecode)
 };
 (: This function matches the soundcontent code to the varable containing the sound content code, returning the text for now
 :)
 declare function marc2bfutils:generate-soundContent($cf007-5, $cf007-6) as xs:string* {
- 
+
     (fn:string( $marc2bfutils:sounds//type[@cf007-5=$cf007-5]/text()),
     fn:string( $marc2bfutils:sounds//type[@cf007-6=$cf007-6]/text() )
     )
-};			
+};
 
 (: This function chops the given punctuation from the end of the given string. useful for lopping off ending periods (but be careful!)
 adapted from marcslim2modsutils.xsl
@@ -3257,14 +3257,14 @@ declare function marc2bfutils:chopPunctuation( $str as xs:string*,
     $punc as xs:string){
 let $punc:= if (fn:string-length($punc)=0 ) then  ".:,;/" else $punc
 let $len:=fn:string-length($str)
-return	if ($len=0) then
-			()
-	else if (fn:contains($punc, fn:substring($str,$len,1) )) then
-			marc2bfutils:chopPunctuation(fn:substring($str,1,$len - 1),$punc)
-	else if (fn:not($str)) then
-			()
-	else
-		$str
+return  if ($len=0) then
+                        ()
+        else if (fn:contains($punc, fn:substring($str,$len,1) )) then
+                        marc2bfutils:chopPunctuation(fn:substring($str,1,$len - 1),$punc)
+        else if (fn:not($str)) then
+                        ()
+        else
+                $str
 
 };
 
@@ -3274,12 +3274,12 @@ return	if ($len=0) then
 
 :)
 declare function marc2bfutils:process-language( $lang as xs:string*){
- 
-        if ($lang) then        
+
+        if ($lang) then
             let $langcodematch:=  (:some have 2 codes german = deu, ger :)
                     $marc2bfutils:lang-xwalk/language[@language-name=marc2bfutils:chopPunctuation($lang,".")]/iso6392[1]
             return if ($langcodematch!="") then
-                        element bf:language { 
+                        element bf:language {
                                         attribute rdf:resource { fn:concat("http://id.loc.gov/vocabulary/languages/",$langcodematch)}
                                       }
                          else element bf:language {element bf:Language {element bf:languageOfPart {marc2bfutils:clean-string(fn:string($lang))}}}

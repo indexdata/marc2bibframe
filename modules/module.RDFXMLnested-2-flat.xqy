@@ -1,7 +1,7 @@
 xquery version "1.0";
 
 (:
-:   Module Name: BIBFRAME RDF/XML Nested (RAW) 2 RDF/XML Flat (Condensed) 
+:   Module Name: BIBFRAME RDF/XML Nested (RAW) 2 RDF/XML Flat (Condensed)
 :
 :   Module Version: 1.0
 :
@@ -15,11 +15,11 @@ xquery version "1.0";
 :
 :   Module Overview:    Takes BIBFRAME RDF/XML, which can be
 :       deeply nested, and flattens it by assigning each resource
-:       a URI. This should really be generalized to RDF, i.e. 
+:       a URI. This should really be generalized to RDF, i.e.
 :       not BF specific.
 :
 :)
-   
+
 (:~
 :   Takes BIBFRAME RDF/XML, which can be
 :   deeply nested, and flattens it by assigning each resource
@@ -44,21 +44,21 @@ declare namespace relators      = "http://id.loc.gov/vocabulary/relators/";
 declare namespace skos          = "http://www.w3.org/2004/02/skos/core#";
 
 
-declare variable $RDFXMLnested2flat:resourcesToIgnore := 
+declare variable $RDFXMLnested2flat:resourcesToIgnore :=
     <ignore>
         <class>Provider</class>
         <class>Identifier</class>
         <class>Authority</class>
     </ignore>;
-   
-declare variable $RDFXMLnested2flat:inverses := 
+
+declare variable $RDFXMLnested2flat:inverses :=
     <inverses>
         <inverse sourceResource="bf:Work" targetResource="bf:Annotation">
             <replace lookForOnSource="bf:hasAnnotation" enterOnTarget="bf:annotates" />
-        </inverse>        
+        </inverse>
         <inverse sourceResource="bf:Work" targetResource="bf:Description">
             <replace lookForOnSource="bf:describedIn" enterOnTarget="bf:descriptionOf" />
-        </inverse>            
+        </inverse>
         <inverse sourceResource="bf:Work" targetResource="bf:Description">
             <replace lookForOnSource="bf:hasAnnotation" enterOnTarget="bf:annotates" />
         </inverse>
@@ -77,16 +77,16 @@ declare variable $RDFXMLnested2flat:inverses :=
         <inverse sourceResource="bf:Instance" targetResource="bf:HeldMaterial">
             <replace lookForOnSource="bf:heldMaterial" enterOnTarget="bf:holdingFor" />
         </inverse>
-          
+
         <inverse sourceResource="bf:HeldMaterial" targetResource="bf:HeldItem">
             <replace lookForOnSource="bf:heldItem" enterOnTarget="bf:componentOf" />
         </inverse>
         <inverse sourceResource="bf:Instance" targetResource="bf:HeldItem">
             <replace lookForOnSource="bf:heldItem" enterOnTarget="bf:holdingFor" />
         </inverse>
-        
+
         <!--old :-->
-        <inverse sourceResource="bf:Instance" targetResource="bf:Holding">        
+        <inverse sourceResource="bf:Instance" targetResource="bf:Holding">
             <replace lookForOnSource="bf:hasHolding" enterOnTarget="bf:holds" />
         </inverse>
         <inverse sourceResource="bf:Instance" targetResource="bf:Annotation">
@@ -98,17 +98,17 @@ declare variable $RDFXMLnested2flat:inverses :=
         <inverse sourceResource="bf:Work" targetResource="bf:Instance">
             <replace lookForOnSource="bf:hasInstance" enterOnTarget="bf:instanceOf" />
         </inverse>
-           
+
     </inverses>;
 
 (:~
 :   This is the main function.  Takes BIBFRAME RDF/XML, which can be
 :   deeply nested, and flattens it by assigning each resource
-:   a URI.  This should really be generalized to RDF, 
+:   a URI.  This should really be generalized to RDF,
 :   i.e. not BF specific.
 :
 :   @param  $rdfxml         node() is the RDF/XML
-:   @param  $baseuri        xs:string is the base uri for identifiers  
+:   @param  $baseuri        xs:string is the base uri for identifiers
 :   @return element         rdf:RDF
 :)
 declare function RDFXMLnested2flat:RDFXMLnested2flat
@@ -116,36 +116,36 @@ declare function RDFXMLnested2flat:RDFXMLnested2flat
             $rdfxml as element(rdf:RDF),
             $baseuri as xs:string,
             $usebnodes as xs:string
-        ) 
+        )
         as element(rdf:RDF)
 {
-    
+
     let $resources := RDFXMLnested2flat:identifyClasses($rdfxml, $baseuri, $usebnodes, 0)
     let $resources := RDFXMLnested2flat:flatten($resources)
     let $resources := RDFXMLnested2flat:removeNesting($resources)
     let $resources := RDFXMLnested2flat:insertInverses($resources, $usebnodes)
     return
         (: ntra changed this to an inline element from constructed, so I control the namespaces added.
-       
+
         :)
-      
+
       <rdf:RDF
             xmlns:rdf           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             xmlns:rdfs          = "http://www.w3.org/2000/01/rdf-schema#"
             xmlns:bf            = "http://bibframe.org/vocab/"
             xmlns:bf2           = "http://bibframe.org/vocab2/"
             xmlns:madsrdf       = "http://www.loc.gov/mads/rdf/v1#"
-            xmlns:relators      = "http://id.loc.gov/vocabulary/relators/"                              
+            xmlns:relators      = "http://id.loc.gov/vocabulary/relators/"
             >
 
         {
-     
+
             $rdfxml/@*,
             for $w in    $resources/self::bf:Work
             order by $w/@rdf:about
             return $w,
-             
-        
+
+
             $resources/self::bf:Instance,
             $resources/self::bf:Authority,
             $resources/self::bf:Annotation,
@@ -157,7 +157,7 @@ declare function RDFXMLnested2flat:RDFXMLnested2flat
             $resources/self::bf:TableOfContents,
             $resources/self::madsrdf:Source,
             $resources/self::bf:*[fn:not(fn:matches(fn:local-name(), "(Work|Instance|Authority|Annotation|Holding|HeldMaterial|HeldItem|Summary|Review|TableOfContents)"))]
-          
+
             }
         </rdf:RDF>
 };
@@ -166,13 +166,13 @@ declare function RDFXMLnested2flat:RDFXMLnested2flat
 (:~
 :   Flattens the RDF/XML.  Extract all identified resources.
 :
-:   @param  $resources      element()* are the resources.   
+:   @param  $resources      element()* are the resources.
 :   @return element()       resources
 :)
 declare function RDFXMLnested2flat:flatten($resources as element()*)
         as element()*
 {
-    
+
     (:
     let $resources := ($resources[@rdf:about],$resources//child::node()[@rdf:about])
     return $resources
@@ -190,7 +190,7 @@ declare function RDFXMLnested2flat:flatten($resources as element()*)
 :
 :   @param  $rdfxml         node() is the RDF/XML
 :   @param  $baseuri        xs:string is the base uri for identifiers
-:   @param  $place          xs:integer is passed on to ensure unique ID assignment  
+:   @param  $place          xs:integer is passed on to ensure unique ID assignment
 :   @return element()       resources
 :)
 declare function RDFXMLnested2flat:identifyClasses
@@ -202,30 +202,30 @@ declare function RDFXMLnested2flat:identifyClasses
         )
         as element()*
 {
-    
+
     let $ignore := fn:string-join($RDFXMLnested2flat:resourcesToIgnore/class, " ")
-    
+
     let $resources := $rdfxml/child::node()[fn:matches(fn:local-name(), "^([A-Z])([a-z]+)")]
     let $identified-resources :=
         for $r at $pos in $resources
         let $n := fn:lower-case(fn:local-name($r))
-        let $baseuri-new := 
+        let $baseuri-new :=
             if  ($r/@rdf:about) then
-                xs:string($r/@rdf:about)                
+                xs:string($r/@rdf:about)
             else if ($usebnodes eq "true") then
                 "b"
             else
                 $baseuri
         where fn:not(fn:contains($ignore, fn:local-name($r)))
         return
-            element {fn:name($r)} { 
+            element {fn:name($r)} {
                 if  ($r/@rdf:about) then
-                    $r/@rdf:about                
+                    $r/@rdf:about
                 else if ($usebnodes eq "true") then
                     attribute rdf:nodeID { fn:concat($baseuri-new, $n, ($pos + $place)) }
                 else
                     attribute rdf:about { fn:concat($baseuri-new, $n, ($pos + $place)) },
-                
+
                 for $p at $spot in $r/*
                 return
                     if ($p/child::node()[fn:matches(fn:local-name(), "^([A-Z])([a-z]+)")]) then
@@ -243,14 +243,14 @@ declare function RDFXMLnested2flat:identifyClasses
         let $n := fn:lower-case(fn:local-name($r))
         where fn:contains($ignore, fn:local-name($r))
         return $r
-        
-    return ($identified-resources, $skipped-resources) 
+
+    return ($identified-resources, $skipped-resources)
 
 };
 
 
 (:
-declare variable $RDFXMLnested2flat:inverses := 
+declare variable $RDFXMLnested2flat:inverses :=
     <inverses>
         <inverse sourceResource="bf:Work" targetResource="bf:Annotation">
             <replace lookForOnSource="bf:hasAnnotation" enterOnTarget="bf:annotates" />
@@ -272,7 +272,7 @@ declare variable $RDFXMLnested2flat:inverses :=
 (:~
 :   Insert inverse relations.
 :
-:   @param  $resources      element()* are the resources.   
+:   @param  $resources      element()* are the resources.
 :   @return element()       resources
 :)
 declare function RDFXMLnested2flat:insertInverses(
@@ -280,7 +280,7 @@ declare function RDFXMLnested2flat:insertInverses(
     $usebnodes as xs:string)
     as element()*
 {
-    
+
     let $targets := fn:string-join($RDFXMLnested2flat:inverses/inverse/@targetResource, " ")
     (:nate: this won't work because bf:tableOfContents is part of bf:tableOfContentsFor, etc:)
   (:  let $remove-props := fn:concat(
@@ -288,10 +288,10 @@ declare function RDFXMLnested2flat:insertInverses(
             " ",
             fn:string-join($RDFXMLnested2flat:inverses/inverse/replace/@lookForOnSource, " ")
         ):)
-    let $remove-props := fn:concat(    
+    let $remove-props := fn:concat(
             fn:string-join($RDFXMLnested2flat:inverses/inverse/replace/@enterOnTarget, "|"),
             "|",
-            fn:string-join($RDFXMLnested2flat:inverses/inverse/replace/@lookForOnSource, "|")    
+            fn:string-join($RDFXMLnested2flat:inverses/inverse/replace/@lookForOnSource, "|")
         )
     let $modified-targets :=
         for $r in $resources
@@ -300,11 +300,11 @@ declare function RDFXMLnested2flat:insertInverses(
         let $lookFors := $RDFXMLnested2flat:inverses/inverse[@targetResource = $n]
         where fn:contains($targets, $n)
         return
-            element {fn:name($r)} { 
+            element {fn:name($r)} {
                 $r/@*,
-                
-                $r/*[fn:not( fn:matches( fn:name(),$remove-props ))],                
-                     
+
+                $r/*[fn:not( fn:matches( fn:name(),$remove-props ))],
+
                 for $lf in $lookFors
                 let $replace := $lf/replace
                 let $related-resources := $resources[fn:name() = $lf/@sourceResource and child::node()[fn:name() = $replace/@lookForOnSource and xs:string(@rdf:resource) eq $uri]]
@@ -323,9 +323,9 @@ declare function RDFXMLnested2flat:insertInverses(
     (:
         Need to figure out which resources were not processed as
         targets in the above.
-        
+
         Some "targets" may be sources in other situations, but
-        they will have already been processed and must be 
+        they will have already been processed and must be
         bypassed.
     :)
     let $unmodified-resources :=
@@ -334,34 +334,34 @@ declare function RDFXMLnested2flat:insertInverses(
         let $n := xs:string(fn:name($r))
         where fn:not(fn:contains($targets, $n))
         return
-            element {fn:name($r)} { 
-                $r/@*,                
-                $r/*[fn:not( fn:matches( fn:name(),$remove-props ))]               
+            element {fn:name($r)} {
+                $r/@*,
+                $r/*[fn:not( fn:matches( fn:name(),$remove-props ))]
             }
 
     return ($modified-targets, $unmodified-resources)
-  
+
 
 };
 
 (:~
 :   Remove nesting from extracted, identified resources.
 :
-:   @param  $resources      element()* are the resources.   
+:   @param  $resources      element()* are the resources.
 :   @return element()       resources
 :)
 declare function RDFXMLnested2flat:removeNesting(
         $resources as element()*
     ) as element()*
 {
-    
+
     let $simplified-resources :=
         for $r in $resources
         let $n := fn:lower-case(fn:local-name($r))
         return
-            element {fn:name($r)} { 
+            element {fn:name($r)} {
                 $r/@*,
-                
+
                 for $p in $r/*
                 return
                     if ($p/child::node()[@rdf:about]) then
@@ -380,6 +380,6 @@ declare function RDFXMLnested2flat:removeNesting(
                         $p
             }
 
-    return $simplified-resources 
+    return $simplified-resources
 
 };

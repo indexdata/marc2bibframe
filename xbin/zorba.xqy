@@ -68,16 +68,16 @@ declare namespace zerror        = "http://zorba.io/errors";
 (:~
 :   This variable is for the base uri for your Authorites/Concepts.
 :   It is the base URI for the rdf:about attribute.
-:   
+:
 :)
 declare variable $baseuri as xs:string external := "http://example.org/";
 
 (:~
-:   This variable determines whether bnodes should identify resources instead of 
-:   http URIs, except for the "main" Work derived from each MARC record.  At this time, 
+:   This variable determines whether bnodes should identify resources instead of
+:   http URIs, except for the "main" Work derived from each MARC record.  At this time,
 :   the "main" Work must be identified by HTTP URI (using the $baseuri variable
 :   above).
-:   
+:
 :)
 declare variable $usebnodes as xs:string external := "false";
 
@@ -110,7 +110,7 @@ declare variable $logdir as xs:string external := "";
 Performs an http get but does not follow redirects
 
 $l          as xs:string is the label
-$scheme     as xs:string is the scheme    
+$scheme     as xs:string is the scheme
 :)
 declare %an:sequential function local:http-get(
             $label as xs:string,
@@ -119,11 +119,11 @@ declare %an:sequential function local:http-get(
 {
     let $l := fn:encode-for-uri($label)
     (:
-    let $request := 
+    let $request :=
         httpexpath:send-request(
-            <httpexpath:request 
-                method="GET" 
-                href="http://id.loc.gov/authorities/{$scheme}/label/{$l}" 
+            <httpexpath:request
+                method="GET"
+                href="http://id.loc.gov/authorities/{$scheme}/label/{$l}"
                 follow-redirect="false"/>
             )
     :)
@@ -148,7 +148,7 @@ Outputs a resource, replacing verbose hasAuthority property
 with a simple rdf:resource pointer
 
 $resource   as element() is the resource
-$authuri    as xs:string is the authority URI    
+$authuri    as xs:string is the authority URI
 :)
 declare %an:nondeterministic function local:generate-resource(
             $r as element(),
@@ -169,16 +169,16 @@ declare %an:nondeterministic function local:generate-resource(
 Tries to resolve Labels to URIs
 
 $resource   as element() is the resource
-$authuri    as xs:string is the authority URI    
+$authuri    as xs:string is the authority URI
 :)
 declare %an:sequential function local:resolve-labels(
         $flatrdfxml as element(rdf:RDF)
     )
 {
-    let $resources := 
+    let $resources :=
         for $r in $flatrdfxml/*
         let $n := fn:local-name($r)
-        let $scheme := 
+        let $scheme :=
             if ( fn:matches($n, "Topic|TemporalConcept") ) then
                 "subjects"
             else
@@ -188,30 +188,30 @@ declare %an:sequential function local:resolve-labels(
                 let $label := ($r/bf:authorizedAccessPoint, $r/bf:label)[1]
                 let $label := fn:normalize-space(xs:string($label))
                 let $req1 := local:http-get($label, $scheme)
-                let $resource := 
+                let $resource :=
                     if ($req1("status") eq 302) then
                         let $authuri := xs:string($req1("headers")("X-URI"))
                         return local:generate-resource($r, $authuri)
-                    else if ( 
+                    else if (
                         $req1("status") ne 302 and
                         fn:ends-with($label, ".")
                         ) then
-                        let $l := fn:substring($label, 1, fn:string-length($label)-1) 
+                        let $l := fn:substring($label, 1, fn:string-length($label)-1)
                         let $req2 := local:http-get($l, $scheme)
                         return
                             if ($req2("status") eq 302) then
                                 let $authuri := xs:string($req2("headers")("X-URI"))
                                 return local:generate-resource($r, $authuri)
-                            else 
+                            else
                                 (: There was no match or some other message, keep moving :)
                                 $r
-                    else 
+                    else
                         $r
                 return $resource
-                    
+
             else
                 $r
-    
+
     return <rdf:RDF>{$resources}</rdf:RDF>
 };
 
@@ -221,7 +221,7 @@ let $startDT := fn:current-dateTime()
 let $logfilename := fn:replace(fn:substring-before(xs:string($startDT), "."), "-|:", "")
 let $logfilename := fn:concat($logdir, $logfilename, '.log.xml')
 
-let $marcxml := 
+let $marcxml :=
     if ( fn:starts-with($marcxmluri, "http://" ) or fn:starts-with($marcxmluri, "https://" ) ) then
         let $json := http:get($marcxmluri)
         return parsexml:parse($json("body")("content"), <parseoptions:options/>)
@@ -232,7 +232,7 @@ let $marcxml :=
             else
                 file:read-text($marcxmluri)
         let $mxml := parsexml:parse(
-                    $raw-data, 
+                    $raw-data,
                     <parseoptions:options />
                 )
         return $mxml
@@ -247,16 +247,16 @@ let $result :=
             return $hold
     let $httpuri := fn:concat($baseuri , $controlnum)
     let $recordset:= element marcxml:collection{$r,$holds}
-    let $r :=  
+    let $r :=
         try {
             let $rdf := marcbib2bibframe:marcbib2bibframe($recordset,$httpuri)
             let $o := $rdf/child::node()[fn:name()]
-            let $logmsg := 
+            let $logmsg :=
                 element log:success {
                     attribute uri {$httpuri},
                     attribute datetime { fn:current-dateTime() }
                 }
-            return 
+            return
                 element result {
                     element logmsg {$logmsg},
                     element rdf {$o}
@@ -264,7 +264,7 @@ let $result :=
         } catch * {
             (: Could get entire stack trace from Zorba, but omitting for now. :)
             let $stack1 := $zerror:stack-trace
-            let $logmsg := 
+            let $logmsg :=
                 element log:error {
                     attribute uri {$httpuri},
                     attribute datetime { fn:current-dateTime() },
@@ -285,15 +285,15 @@ let $result :=
                     element logmsg {$logmsg}
                 }
         }
-    return 
+    return
         $r
-    
-let $rdfxml-raw := 
+
+let $rdfxml-raw :=
         element rdf:RDF {
             $result//rdf/child::node()[fn:name()]
         }
-        
-let $rdfxml := 
+
+let $rdfxml :=
     if ( $serialization ne "rdfxml-raw" ) then
         let $flatrdfxml := RDFXMLnested2flat:RDFXMLnested2flat($rdfxml-raw, $baseuri, $usebnodes)
         return
@@ -302,10 +302,10 @@ let $rdfxml :=
             else
                 $flatrdfxml
     else
-        $rdfxml-raw 
-        
+        $rdfxml-raw
+
 let $endDT := fn:current-dateTime()
-let $log := 
+let $log :=
     element log:log {
         attribute engine {"MarkLogic"},
         attribute start {$startDT},
@@ -316,8 +316,8 @@ let $log :=
         attribute total-error { fn:count($result//logmsg/log:error) },
         $result//logmsg/log:*
     }
-    
-let $logwritten := 
+
+let $logwritten :=
     if ($writelog eq "true") then
         file:write-text($logfilename, serialize($log,
             <output:serialization-parameters>
@@ -334,17 +334,17 @@ let $logwritten :=
     There are a couple of ways to do it (one is a hack, the other is the right way)
     but 1) will it break anything and 2) is there a need?
 :)
-let $response :=  
-    if ($serialization eq "ntriples") then 
+let $response :=
+    if ($serialization eq "ntriples") then
         if (fn:count($result//logmsg/log:error) > 0) then
             fn:concat("# Errors encountered.  View 'log' for details.", fn:codepoints-to-string(10), rdfxml2nt:rdfxml2ntriples($rdfxml))
         else
             rdfxml2nt:rdfxml2ntriples($rdfxml)
-    else if ($serialization eq "json") then 
+    else if ($serialization eq "json") then
         rdfxml2json:rdfxml2json($rdfxml)
     else if ($serialization eq "exhibitJSON") then
         bfRDFXML2exhibitJSON:bfRDFXML2exhibitJSON($rdfxml, $baseuri)
-    else if ($serialization eq "log") then 
+    else if ($serialization eq "log") then
         $log
     else
         if (fn:count($result//logmsg/log:error) > 0) then
@@ -352,8 +352,8 @@ let $response :=
                 comment {"Errors encountered.  View 'log' for details."},
                 $rdfxml/*
             }
-        else 
+        else
             $rdfxml
-            
+
 return $response
 

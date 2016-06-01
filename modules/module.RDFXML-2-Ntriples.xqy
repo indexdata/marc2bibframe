@@ -18,11 +18,11 @@ xquery version "1.0";
 :       XML.
 :
 :   NB: This file has been modified to remove a ML dependency at
-:   around line 126 (xdmp:quote).  Could be a problem for Literal types.  
+:   around line 126 (xdmp:quote).  Could be a problem for Literal types.
 :)
-   
+
 (:~
-:   Takes RDF/XML and transforms to ntriples.  xdmp extension 
+:   Takes RDF/XML and transforms to ntriples.  xdmp extension
 :   used in order to quote/escape otherwise valid XML.
 :
 :   @author Kevin Ford (kefo@loc.gov)
@@ -36,32 +36,32 @@ declare namespace   rdf         = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 :   This is the main function.  Input RDF/XML, output ntiples.
 :   All other functions are local.
 :
-:   @param  $rdfxml        node() is the RDF/XML  
+:   @param  $rdfxml        node() is the RDF/XML
 :   @return ntripes as xs:string
 :)
 declare function rdfxml2nt:rdfxml2ntriples($rdfxml as node()) as xs:string {
     if( $rdfxml[1][fn:local-name() eq "RDF"] ) then
-        let $resources := 
+        let $resources :=
             for $i in $rdfxml/child::node()[fn:name()]
             return rdfxml2nt:parse_class($i, "")
         return fn:string-join($resources, "&#x0a;")
-    else ("Invalid source: RDF/XML should have a root node of RDF.") 
+    else ("Invalid source: RDF/XML should have a root node of RDF.")
 };
 
 (:~
 :   This function parses a RDF Class.
 :
 :   @param  $node        node()
-:   @param  $uri_pass   xs:string, is the URI passed 
+:   @param  $uri_pass   xs:string, is the URI passed
 :                       from the property evaluation and to be
-:                       used in the absence of a rdf:about or rdf:nodeID  
+:                       used in the absence of a rdf:about or rdf:nodeID
 :   @return ntripes as xs:string
 :)
 declare function rdfxml2nt:parse_class(
-    $node as node(), 
+    $node as node(),
     $uri_pass as xs:string
     ) as item()* {
-    
+
     let $uri :=
         if ($node/@rdf:about ne "") then
             fn:concat( "<", fn:data($node/@rdf:about), ">")
@@ -75,7 +75,7 @@ declare function rdfxml2nt:parse_class(
             $uri_pass
         else
             rdfxml2nt:return_bnode($node)
-    let $triple := 
+    let $triple :=
         if (fn:local-name($node) eq "Description") then
             (: fn:concat( $uri, " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" , $node/child::node()[fn:name(.) eq "rdf:type"]/@rdf:resource , "> . " , fn:codepoints-to-string(10)) :)
             ""
@@ -87,7 +87,7 @@ declare function rdfxml2nt:parse_class(
         else ""
     return
         if ($node/child::node()[fn:not(rdf:type)]) then
-            let $properties := 
+            let $properties :=
                 for $i at $pos in $node/child::node()[fn:not(rdf:type) and fn:name()]
                     return rdfxml2nt:parse_property($i , $uri)
             return fn:concat($triple , fn:string-join($properties , ""))
@@ -99,16 +99,16 @@ declare function rdfxml2nt:parse_class(
 :   This function parses a RDF Property
 :
 :   @param  $node       node()
-:   @param  $uri        xs:string, is the URI passed 
+:   @param  $uri        xs:string, is the URI passed
 :                       from the Class evaluation
 :   @return ntripes as xs:string
 :)
 declare function rdfxml2nt:parse_property(
-    $node as node(), 
+    $node as node(),
     $uri as xs:string
     ) as item()* {
-    
-    let $resource_string := 
+
+    let $resource_string :=
         if ($node/@rdf:resource) then
             fn:concat("<" , fn:data($node/@rdf:resource) , ">")
         else if ($node[@rdf:parseType eq "Collection"] and fn:not($node/@rdf:nodeID)) then
@@ -118,11 +118,11 @@ declare function rdfxml2nt:parse_property(
         else if ($node/child::node()[1]/@rdf:about) then
             fn:concat("<" , fn:data($node/child::node()[1]/@rdf:about) , ">")
         else if ($node[@rdf:parseType eq "Literal"]) then
-            fn:concat('"' , 
+            fn:concat('"' ,
                 fn:replace(
                     fn:replace(
                         fn:replace(
-                             $node/child::node()/text(), 
+                             $node/child::node()/text(),
                             '&quot;',
                             '\\"'
                         ),
@@ -144,39 +144,39 @@ declare function rdfxml2nt:parse_property(
                     fn:concat('^^<' , xs:string($node/@rdf:datatype) , '>' )
                 else ()
             )
-            
+
     let $triple := fn:concat( $uri , " <" , fn:namespace-uri($node) , fn:local-name($node) , "> " , $resource_string , " . ", fn:codepoints-to-string(10) )
     return
         if ($node/child::node()[fn:name()] and $node[@rdf:parseType eq "Collection"]) then
             let $classes := rdfxml2nt:parse_collection($node/child::node()[fn:name()][1] , $resource_string)
             return fn:concat($triple , fn:string-join($classes,''))
-            
+
         else if ($node/child::node()[fn:name()] and fn:not($node/@rdf:parseType)) then
-            (:  is this the correct "if statement"?  Could there be a parseType 
+            (:  is this the correct "if statement"?  Could there be a parseType
                 *and* a desire to traverse the tree at this point? :)
-            let $classes := 
+            let $classes :=
                 for $i in $node/child::node()[fn:name()]
                 return rdfxml2nt:parse_class($i , $resource_string)
             return fn:concat($triple , fn:string-join($classes,""))
         else
             $triple
-            
+
 };
 
 (:~
 :   Parse a rdf:parseType="Collection" element
 :
 :   @param  $node       node()
-:   @param  $uri        xs:string, is the URI passed 
+:   @param  $uri        xs:string, is the URI passed
 :                       from the Property evaluation
 :   @return ntripes as xs:string
 :)
 declare function rdfxml2nt:parse_collection(
-    $node as node(), 
+    $node as node(),
     $uri as xs:string
     ) as item()* {
-    
-    let $resource_string := 
+
+    let $resource_string :=
         if ($node/@rdf:resource) then
             fn:concat("<" , fn:data($node/@rdf:resource) , ">")
         else if ($node/@rdf:about) then
@@ -185,14 +185,14 @@ declare function rdfxml2nt:parse_collection(
             fn:concat( "_:", fn:data($node/@rdf:nodeID))
         else
             rdfxml2nt:return_bnode($node/child::node()[fn:name()][1])
-            
+
     let $triple := fn:concat( $uri , " <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> " , $resource_string , " . " , fn:codepoints-to-string(10))
     let $following_bnode :=
-        if ($node/following-sibling::node()[fn:name()][1]) then 
+        if ($node/following-sibling::node()[fn:name()][1]) then
             rdfxml2nt:return_bnode_collection($node/following-sibling::node()[fn:name()][1])
-        else 
+        else
             fn:false()
-    let $rest := 
+    let $rest :=
         if ($following_bnode) then
             fn:concat( $uri , " <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> " , $following_bnode , " . " , fn:codepoints-to-string(10))
         else
@@ -200,7 +200,7 @@ declare function rdfxml2nt:parse_collection(
 
     let $uri := $resource_string
     let $class := rdfxml2nt:parse_class($node, $uri)
-        
+
     return
         if ($following_bnode) then
             let $sibling :=  rdfxml2nt:parse_collection($node/following-sibling::node()[fn:name()][1] , $following_bnode)
@@ -236,7 +236,7 @@ declare function rdfxml2nt:return_bnode_collection($node as node()) as xs:string
 };
 
 (:~
-:   bnode distinction - munges the URI in an attempt to 
+:   bnode distinction - munges the URI in an attempt to
 :   create a better probability for bnode uniqueness
 :
 :   @param  $uri        xs:string
@@ -244,9 +244,9 @@ declare function rdfxml2nt:return_bnode_collection($node as node()) as xs:string
 :)
 declare function rdfxml2nt:return_uri4bnode($uri as xs:string) as xs:string {
     let $uriparts := fn:tokenize($uri, '/')
-    let $uriparts4bnode := 
+    let $uriparts4bnode :=
             for $u in $uriparts
-            let $str := 
+            let $str :=
                 if ( fn:matches($u , '\.|:|#') eq fn:false() ) then
                     $u
                 else ()

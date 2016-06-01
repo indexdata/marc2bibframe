@@ -18,7 +18,7 @@ xquery version "1.0";
 :       This may be a tortured train wreck.  We'll see.
 :
 :)
-   
+
 (:~
 :   Takes BIBFRAME RDF/XML and converts
 :   to JSON serialization to be used with MIT Exhibit.
@@ -41,38 +41,38 @@ declare namespace notes         = "http://id.loc.gov/vocabulary/notes/";
 
 
 (:~
-:   This is the main function.  It converts BIBFRAME RDF/XML 
+:   This is the main function.  It converts BIBFRAME RDF/XML
 :   to JSON serialization to be used with MIT Exhibit.
 :
 :   @param  $rdfxml         node() is the RDF/XML
 :   @param  $baseuri        xs:string is the base uri for identifiers
 :   @param  $hash           xs:string a unique hash for the identifier
 :                           it is designed to be used when this script
-:                           is run as part of a larger environment.   
+:                           is run as part of a larger environment.
 :   @return xs:string       javascript
 :)
 declare function bfRDFXML2exhibitJSON:bfRDFXML2exhibitJSON
         (
             $rdfxml as element(rdf:RDF),
             $baseuri as xs:string
-        ) 
+        )
         as xs:string
 {
-    
-    let $resources := 
+
+    let $resources :=
         for $c in $rdfxml/*[fn:name()]
         let $type := fn:local-name($c)
         let $uri := xs:string($c/@rdf:about)
         let $id := fn:replace($uri, $baseuri, "")
         let $l := ($c/bf:authorizedAccessPoint|$c/bf:label|$c/bf:title|$c/madsrdf:authoritativeLabel|$c/rdfs:label)[1]
         let $l := fn:replace(xs:string($l), '"', '\\"')
-        let $props-names := 
+        let $props-names :=
             for $p in $c/*[fn:name()]
             return fn:name($p)
-        let $props-distinct := fn:distinct-values($props-names) 
-        let $props := 
+        let $props-distinct := fn:distinct-values($props-names)
+        let $props :=
             for $name in $props-distinct
-            let $ps := 
+            let $ps :=
                 for $p in $c/*[fn:name()=$name]
                 return
                     if ($p/@rdf:resource) then
@@ -82,31 +82,31 @@ declare function bfRDFXML2exhibitJSON:bfRDFXML2exhibitJSON
                         return fn:concat('"', fn:replace(xs:string($label), '"', '\\"') , '"')
                     (: else if (xs:string($p/@rdf:parseType)="Collection") then :)
                     else if ($p/child::node()[fn:name()]/child::node()[fn:name()]) then
-                        let $list-items := 
+                        let $list-items :=
                             for $i in $p/*[fn:name()]
                             let $t := fn:local-name($i)
-                            let $els := 
+                            let $els :=
                                 for $e in $i/*[fn:name()]
                                 let $n := fn:replace(fn:name($e), ":", "-")
                                 return fn:concat('"', $n , '": "', fn:normalize-space(fn:replace(xs:string($e), '"', '\\"')), '"')
                             return
-                                fn:concat('{ 
-                                    "type": ', fn:concat('"', $t , '"'), ', 
+                                fn:concat('{
+                                    "type": ', fn:concat('"', $t , '"'), ',
                                     ', fn:string-join($els, ", &#10;"), '
                                     }')
                         return fn:concat('[', fn:string-join($list-items, ', '), ']')
                     else
                         fn:concat('"', fn:normalize-space(fn:replace(xs:string($p), '"', '\\"')) , '"')
-            let $ps := 
+            let $ps :=
                 if ( fn:count($ps) eq 1 ) then
                     fn:concat('"', fn:replace($name, ":", "-") , '": ', $ps)
                 else
                     fn:concat('"', fn:replace($name, ":", "-") , '": [', fn:string-join($ps, ', '), ']' )
             where xs:string($name) ne "rdf:type"
             return $ps
-        return 
-            fn:concat('{ 
-                "type": ', fn:concat('"', $type , '"'), ', 
+        return
+            fn:concat('{
+                "type": ', fn:concat('"', $type , '"'), ',
                 "id": ', fn:concat('"', $id , '"'), ',
                 "bf-id": ', fn:concat('"', $id , '"'), ',
                 "uri": ', fn:concat('"', $uri , '"'), ',
